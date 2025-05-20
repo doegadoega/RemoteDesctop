@@ -23,8 +23,20 @@ struct RemoteDesktopView: View {
     var body: some View {
         VStack {
             if isConnecting {
-                ProgressView("接続中...")
-                    .padding()
+                ZStack {
+                    Color.black.edgesIgnoringSafeArea(.all)
+                    
+                    VStack {
+                        ProgressView("接続中...")
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .foregroundColor(.white)
+                            .padding()
+                        
+                        Text("\(connection.name) (\(connection.hostname):\(connection.port))")
+                            .foregroundColor(.white)
+                            .padding(.top, 8)
+                    }
+                }
             } else if isConnected {
                 // リモートデスクトップ表示エリア
                 ZStack {
@@ -32,8 +44,14 @@ struct RemoteDesktopView: View {
                     Rectangle()
                         .fill(Color.black)
                         .overlay(
-                            Text("リモートデスクトップ画面")
-                                .foregroundColor(.white)
+                            VStack {
+                                Image(systemName: "desktopcomputer")
+                                    .font(.system(size: 60))
+                                    .foregroundColor(.gray)
+                                    .padding()
+                                Text("リモートデスクトップ画面")
+                                    .foregroundColor(.white)
+                            }
                         )
                     
                     // 接続情報を表示
@@ -43,7 +61,7 @@ struct RemoteDesktopView: View {
                             Text("\(connection.name) (\(connection.hostname):\(connection.port))")
                                 .font(.caption)
                                 .padding(8)
-                                .background(Color.black.opacity(0.5))
+                                .background(Color.black.opacity(0.7))
                                 .foregroundColor(.white)
                                 .cornerRadius(8)
                             Spacer()
@@ -58,6 +76,18 @@ struct RemoteDesktopView: View {
                         keyboardVisible.toggle()
                     }) {
                         Image(systemName: "keyboard")
+                            .font(.system(size: 20))
+                            .padding()
+                    }
+                    
+                    Spacer()
+                    
+                    // マウスモードボタン
+                    Button(action: {
+                        // マウスモード切替
+                    }) {
+                        Image(systemName: "hand.tap")
+                            .font(.system(size: 20))
                             .padding()
                     }
                     
@@ -67,10 +97,12 @@ struct RemoteDesktopView: View {
                         disconnect()
                     }) {
                         Image(systemName: "xmark.circle")
+                            .font(.system(size: 20))
                             .padding()
                     }
                 }
-                .background(Color.secondary.opacity(0.2))
+                .background(Color.black.opacity(0.8))
+                .foregroundColor(.white)
                 
                 // キーボード入力エリア
                 if keyboardVisible {
@@ -84,12 +116,19 @@ struct RemoteDesktopView: View {
                             sendKeyboardInput()
                         }
                         .padding()
+                        .buttonStyle(.borderedProminent)
                     }
                     .padding()
+                    .background(Color.black.opacity(0.8))
                     .transition(.move(edge: .bottom))
                 }
             } else {
                 VStack {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 50))
+                        .foregroundColor(.yellow)
+                        .padding()
+                    
                     Text("接続に失敗しました")
                         .font(.headline)
                         .padding()
