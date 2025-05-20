@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		022430392DDCC63400A17644 /* RoyalVNCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 022430382DDCC63400A17644 /* RoyalVNCKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		02290FD72DDCC58800F6FCF5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,9 +28,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		02290FC72DDCC58700F6FCF5 /* remoteDesctop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = remoteDesctop.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		02290FD62DDCC58800F6FCF5 /* remoteDesctopTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = remoteDesctopTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		02290FE02DDCC58800F6FCF5 /* remoteDesctopUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = remoteDesctopUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		02290FC72DDCC58700F6FCF5 /* RemoteDesctop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RemoteDesctop.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		02290FD62DDCC58800F6FCF5 /* RemoteDesctopTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RemoteDesctopTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		02290FE02DDCC58800F6FCF5 /* RemoteDesctopUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RemoteDesctopUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				022430392DDCC63400A17644 /* RoyalVNCKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,9 +90,9 @@
 		02290FC82DDCC58700F6FCF5 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				02290FC72DDCC58700F6FCF5 /* remoteDesctop.app */,
-				02290FD62DDCC58800F6FCF5 /* remoteDesctopTests.xctest */,
-				02290FE02DDCC58800F6FCF5 /* remoteDesctopUITests.xctest */,
+				02290FC72DDCC58700F6FCF5 /* RemoteDesctop.app */,
+				02290FD62DDCC58800F6FCF5 /* RemoteDesctopTests.xctest */,
+				02290FE02DDCC58800F6FCF5 /* RemoteDesctopUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,9 +100,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		02290FC62DDCC58700F6FCF5 /* remoteDesctop */ = {
+		02290FC62DDCC58700F6FCF5 /* RemoteDesctop */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 02290FEA2DDCC58800F6FCF5 /* Build configuration list for PBXNativeTarget "remoteDesctop" */;
+			buildConfigurationList = 02290FEA2DDCC58800F6FCF5 /* Build configuration list for PBXNativeTarget "RemoteDesctop" */;
 			buildPhases = (
 				02290FC32DDCC58700F6FCF5 /* Sources */,
 				02290FC42DDCC58700F6FCF5 /* Frameworks */,
@@ -110,16 +115,17 @@
 			fileSystemSynchronizedGroups = (
 				02290FC92DDCC58700F6FCF5 /* remoteDesctop */,
 			);
-			name = remoteDesctop;
+			name = RemoteDesctop;
 			packageProductDependencies = (
+				022430382DDCC63400A17644 /* RoyalVNCKit */,
 			);
 			productName = remoteDesctop;
-			productReference = 02290FC72DDCC58700F6FCF5 /* remoteDesctop.app */;
+			productReference = 02290FC72DDCC58700F6FCF5 /* RemoteDesctop.app */;
 			productType = "com.apple.product-type.application";
 		};
-		02290FD52DDCC58800F6FCF5 /* remoteDesctopTests */ = {
+		02290FD52DDCC58800F6FCF5 /* RemoteDesctopTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 02290FED2DDCC58800F6FCF5 /* Build configuration list for PBXNativeTarget "remoteDesctopTests" */;
+			buildConfigurationList = 02290FED2DDCC58800F6FCF5 /* Build configuration list for PBXNativeTarget "RemoteDesctopTests" */;
 			buildPhases = (
 				02290FD22DDCC58800F6FCF5 /* Sources */,
 				02290FD32DDCC58800F6FCF5 /* Frameworks */,
@@ -133,16 +139,16 @@
 			fileSystemSynchronizedGroups = (
 				02290FD92DDCC58800F6FCF5 /* remoteDesctopTests */,
 			);
-			name = remoteDesctopTests;
+			name = RemoteDesctopTests;
 			packageProductDependencies = (
 			);
 			productName = remoteDesctopTests;
-			productReference = 02290FD62DDCC58800F6FCF5 /* remoteDesctopTests.xctest */;
+			productReference = 02290FD62DDCC58800F6FCF5 /* RemoteDesctopTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		02290FDF2DDCC58800F6FCF5 /* remoteDesctopUITests */ = {
+		02290FDF2DDCC58800F6FCF5 /* RemoteDesctopUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 02290FF02DDCC58800F6FCF5 /* Build configuration list for PBXNativeTarget "remoteDesctopUITests" */;
+			buildConfigurationList = 02290FF02DDCC58800F6FCF5 /* Build configuration list for PBXNativeTarget "RemoteDesctopUITests" */;
 			buildPhases = (
 				02290FDC2DDCC58800F6FCF5 /* Sources */,
 				02290FDD2DDCC58800F6FCF5 /* Frameworks */,
@@ -156,11 +162,11 @@
 			fileSystemSynchronizedGroups = (
 				02290FE32DDCC58800F6FCF5 /* remoteDesctopUITests */,
 			);
-			name = remoteDesctopUITests;
+			name = RemoteDesctopUITests;
 			packageProductDependencies = (
 			);
 			productName = remoteDesctopUITests;
-			productReference = 02290FE02DDCC58800F6FCF5 /* remoteDesctopUITests.xctest */;
+			productReference = 02290FE02DDCC58800F6FCF5 /* RemoteDesctopUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -186,7 +192,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 02290FC22DDCC58700F6FCF5 /* Build configuration list for PBXProject "remoteDesctop" */;
+			buildConfigurationList = 02290FC22DDCC58700F6FCF5 /* Build configuration list for PBXProject "RemoteDesctop" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -195,14 +201,17 @@
 			);
 			mainGroup = 02290FBE2DDCC58700F6FCF5;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				022430372DDCC63400A17644 /* XCRemoteSwiftPackageReference "royalvnc" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 02290FC82DDCC58700F6FCF5 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				02290FC62DDCC58700F6FCF5 /* remoteDesctop */,
-				02290FD52DDCC58800F6FCF5 /* remoteDesctopTests */,
-				02290FDF2DDCC58800F6FCF5 /* remoteDesctopUITests */,
+				02290FC62DDCC58700F6FCF5 /* RemoteDesctop */,
+				02290FD52DDCC58800F6FCF5 /* RemoteDesctopTests */,
+				02290FDF2DDCC58800F6FCF5 /* RemoteDesctopUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -258,12 +267,12 @@
 /* Begin PBXTargetDependency section */
 		02290FD82DDCC58800F6FCF5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 02290FC62DDCC58700F6FCF5 /* remoteDesctop */;
+			target = 02290FC62DDCC58700F6FCF5 /* RemoteDesctop */;
 			targetProxy = 02290FD72DDCC58800F6FCF5 /* PBXContainerItemProxy */;
 		};
 		02290FE22DDCC58800F6FCF5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 02290FC62DDCC58700F6FCF5 /* remoteDesctop */;
+			target = 02290FC62DDCC58700F6FCF5 /* RemoteDesctop */;
 			targetProxy = 02290FE12DDCC58800F6FCF5 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -461,7 +470,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/remoteDesctop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/remoteDesctop";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RemoteDesctop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RemoteDesctop";
 			};
 			name = Debug;
 		};
@@ -480,7 +489,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/remoteDesctop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/remoteDesctop";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RemoteDesctop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RemoteDesctop";
 			};
 			name = Release;
 		};
@@ -521,7 +530,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		02290FC22DDCC58700F6FCF5 /* Build configuration list for PBXProject "remoteDesctop" */ = {
+		02290FC22DDCC58700F6FCF5 /* Build configuration list for PBXProject "RemoteDesctop" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				02290FE82DDCC58800F6FCF5 /* Debug */,
@@ -530,7 +539,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		02290FEA2DDCC58800F6FCF5 /* Build configuration list for PBXNativeTarget "remoteDesctop" */ = {
+		02290FEA2DDCC58800F6FCF5 /* Build configuration list for PBXNativeTarget "RemoteDesctop" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				02290FEB2DDCC58800F6FCF5 /* Debug */,
@@ -539,7 +548,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		02290FED2DDCC58800F6FCF5 /* Build configuration list for PBXNativeTarget "remoteDesctopTests" */ = {
+		02290FED2DDCC58800F6FCF5 /* Build configuration list for PBXNativeTarget "RemoteDesctopTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				02290FEE2DDCC58800F6FCF5 /* Debug */,
@@ -548,7 +557,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		02290FF02DDCC58800F6FCF5 /* Build configuration list for PBXNativeTarget "remoteDesctopUITests" */ = {
+		02290FF02DDCC58800F6FCF5 /* Build configuration list for PBXNativeTarget "RemoteDesctopUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				02290FF12DDCC58800F6FCF5 /* Debug */,
@@ -558,6 +567,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		022430372DDCC63400A17644 /* XCRemoteSwiftPackageReference "royalvnc" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/royalapplications/royalvnc";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		022430382DDCC63400A17644 /* RoyalVNCKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 022430372DDCC63400A17644 /* XCRemoteSwiftPackageReference "royalvnc" */;
+			productName = RoyalVNCKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 02290FBF2DDCC58700F6FCF5 /* Project object */;
 }
