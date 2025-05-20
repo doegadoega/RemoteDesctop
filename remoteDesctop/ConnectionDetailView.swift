@@ -18,6 +18,7 @@ struct ConnectionDetailView: View {
     @State private var showingAlert = false
     @State private var alertMessage = ""
     @State private var showingEditSheet = false
+    @State private var navigateToRemoteDesktop = false
     
     var body: some View {
         List {
@@ -75,35 +76,15 @@ struct ConnectionDetailView: View {
         .sheet(isPresented: $showingEditSheet) {
             EditConnectionView(connection: connection)
         }
+        .navigationDestination(isPresented: $navigateToRemoteDesktop) {
+            RemoteDesktopView(connection: connection)
+        }
     }
     
     private func connectToRemoteDesktop() {
-        isConnecting = true
-        
-        Task {
-            do {
-                let success = try await RemoteConnectionService.shared.connect(to: connection)
-                
-                await MainActor.run {
-                    if success {
-                        // Update last connected timestamp
-                        connection.lastConnected = Date()
-                        alertMessage = "Connected to \(connection.name)"
-                    } else {
-                        alertMessage = "Failed to connect to \(connection.name)"
-                    }
-                    
-                    isConnecting = false
-                    showingAlert = true
-                }
-            } catch {
-                await MainActor.run {
-                    isConnecting = false
-                    alertMessage = "Error: \(error.localizedDescription)"
-                    showingAlert = true
-                }
-            }
-        }
+        // 接続画面に遷移
+        connection.lastConnected = Date()
+        navigateToRemoteDesktop = true
     }
 }
 
