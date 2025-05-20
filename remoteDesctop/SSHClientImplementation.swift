@@ -1,16 +1,28 @@
 //
-//  SSHClient.swift
+//  SSHClientImplementation.swift
 //  remoteDesctop
 //
 //  Created by Hiroshi Egami on 2025/05/20.
 //
 
 import Foundation
-// SPMでインポート
 import NMSSH
 
-// SSHクライアントのラッパークラス
-class SSHClient {
+// SSHクライアントの実装
+// SPMを使用した実装例
+
+// SSHクライアントのプロトコル
+protocol SSHClientProtocol {
+    func connect() async throws -> Bool
+    func disconnect()
+    func executeCommand(_ command: String) throws -> String
+    func startShell() throws
+    func writeToShell(_ command: String) throws
+    func readFromShell() throws -> String
+}
+
+// SSHクライアントの実装クラス
+class SSHClientImplementation: SSHClientProtocol {
     private var hostname: String
     private var port: Int
     private var username: String
@@ -53,7 +65,7 @@ class SSHClient {
         }
         
         isConnected = true
-        connectionDelegate?.sshClientDidConnect(self)
+        connectionDelegate?.sshClientDidConnect(self as! SSHClient)
         
         return true
     }
@@ -62,7 +74,7 @@ class SSHClient {
         if isConnected, let session = session {
             session.disconnect()
             isConnected = false
-            connectionDelegate?.sshClientDidDisconnect(self)
+            connectionDelegate?.sshClientDidDisconnect(self as! SSHClient)
         }
     }
     
@@ -73,6 +85,7 @@ class SSHClient {
         }
         
         let response = session.channel.execute(command, error: nil)
+        connectionDelegate?.sshClient(self as! SSHClient, didReceiveOutput: response)
         return response
     }
     
@@ -100,14 +113,8 @@ class SSHClient {
             throw NSError(domain: "SSHClient", code: 1003, userInfo: [NSLocalizedDescriptionKey: "接続されていません"])
         }
         
-        return session.channel.read()
+        let output = session.channel.read()
+        connectionDelegate?.sshClient(self as! SSHClient, didReceiveOutput: output)
+        return output
     }
-}
-
-// SSH接続のデリゲートプロトコル
-protocol SSHConnectionDelegate: AnyObject {
-    func sshClientDidConnect(_ client: SSHClient)
-    func sshClientDidDisconnect(_ client: SSHClient)
-    func sshClient(_ client: SSHClient, didFailWithError error: Error)
-    func sshClient(_ client: SSHClient, didReceiveOutput output: String)
 }

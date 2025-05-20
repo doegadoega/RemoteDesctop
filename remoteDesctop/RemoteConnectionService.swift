@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+// SPMを使用した実装
 class RemoteConnectionService: NSObject, RDPConnectionDelegate, VNCConnectionDelegate, SSHConnectionDelegate {
     static let shared = RemoteConnectionService()
     

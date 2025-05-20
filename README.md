@@ -19,8 +19,9 @@ iOS用のリモートデスクトップクライアントアプリケーショ�
 - SwiftとSwiftUIを使用して開発
 - SwiftData（iOS 17の新機能）を使用してローカルデータを永続化
 - iOS 17以上をターゲット
+- Swift Package Manager (SPM) による依存関係管理
 - 接続ライブラリ:
-  - RDP: FreeRDP（予定）
+  - RDP: TigerVNC（代替ライブラリ）
   - VNC: CocoaAsyncSocketベースの実装
   - SSH: NMSSH
 
@@ -49,8 +50,33 @@ iOS用のリモートデスクトップクライアントアプリケーショ�
   - SwiftUI: ユーザーインターフェース
   - SwiftData: データ永続化
   - Combine: 非同期処理
-  - CocoaAsyncSocket: VNC接続
-  - NMSSH: SSH接続
+  - CocoaAsyncSocket: VNC接続（SPM経由）
+  - NMSSH: SSH接続（SPM経由）
+  - TigerVNC: RDP/VNC接続（SPM経由）
+
+### プロジェクト構造
+
+- `RemoteConnection.swift`: 接続情報のデータモデル
+- `ContentView.swift`: メインビュー（接続リスト）
+- `AddConnectionView.swift`: 新しい接続を追加するためのフォーム
+- `ConnectionDetailView.swift`: 接続の詳細と接続ボタン
+- `EditConnectionView.swift`: 既存の接続を編集するためのフォーム
+- `RemoteDesktopView.swift`: リモートデスクトップ表示画面
+- `RemoteConnectionService.swift`: 接続処理を行うサービスクラス
+- クライアント実装:
+  - `RDPClient.swift`: RDP接続のインターフェース
+  - `RDPClientImplementation.swift`: RDP接続の実装
+  - `VNCClient.swift`: VNC接続のインターフェース
+  - `VNCClientImplementation.swift`: VNC接続の実装
+  - `SSHClient.swift`: SSH接続のインターフェース
+  - `SSHClientImplementation.swift`: SSH接続の実装
+
+### ビルド手順
+
+1. リポジトリをクローンする
+2. Xcodeでプロジェクトを開く（.xcodeproj）
+3. Swift Package Managerが自動的に依存関係をダウンロード
+4. ビルドして実行する
 
 ## 今後の開発予定
 
