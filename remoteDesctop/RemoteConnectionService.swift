@@ -8,20 +8,78 @@
 import Foundation
 import SwiftUI
 
-class RemoteConnectionService {
+// SPMを使用した実装
+class RemoteConnectionService: NSObject, RDPConnectionDelegate, AppVNCClientDelegate, SSHConnectionDelegate {
     static let shared = RemoteConnectionService()
     
-    private init() {}
+    private var rdpClient: RDPClient?
+    private var vncClient: VNCClient?
+    private var sshClient: SSHClient?
+    
+    private var activeConnection: RemoteConnection?
+    private var connectionCompletion: ((Bool, Error?) -> Void)?
+    
+    private override init() {
+        super.init()
+    }
     
     func connect(to connection: RemoteConnection) async throws -> Bool {
-        // In a real implementation, this would use the Royal SDK or another
-        // remote desktop library to establish the connection
+        activeConnection = connection
         
-        // For now, we'll simulate a connection process
-        try await Task.sleep(for: .seconds(2))
+        switch connection.connectionType {
+        case .rdp:
+            return try await connectRDP(connection)
+        case .vnc:
+            return try await connectVNC(connection)
+        case .ssh:
+            return try await connectSSH(connection)
+        }
+    }
+    
+    private func connectRDP(_ connection: RemoteConnection) async throws -> Bool {
+        rdpClient = RDPClient(
+            hostname: connection.hostname,
+            port: connection.port,
+            username: connection.username,
+            password: connection.password
+        )
         
-        // Simulate a successful connection
-        return true
+        rdpClient?.setDelegate(self)
+        return try await rdpClient?.connect() ?? false
+    }
+    
+    private func connectVNC(_ connection: RemoteConnection) async throws -> Bool {
+        vncClient = VNCClient(
+            hostname: connection.hostname,
+            port: connection.port,
+            password: connection.password
+        )
+        
+        vncClient?.setDelegate(self)
+        return try await vncClient?.connect() ?? false
+    }
+    
+    private func connectSSH(_ connection: RemoteConnection) async throws -> Bool {
+        sshClient = SSHClient(
+            hostname: connection.hostname,
+            port: connection.port,
+            username: connection.username,
+            password: connection.password
+        )
+        
+        sshClient?.setDelegate(self)
+        return try await sshClient?.connect() ?? false
+    }
+    
+    func disconnect() {
+        rdpClient?.disconnect()
+        vncClient?.disconnect()
+        sshClient?.disconnect()
+        
+        rdpClient = nil
+        vncClient = nil
+        sshClient = nil
+        activeConnection = nil
     }
     
     func getDefaultPort(for connectionType: ConnectionType) -> Int {
@@ -41,5 +99,61 @@ class RemoteConnectionService {
         guard connection.port > 0 else { return false }
         
         return true
+    }
+    
+    // MARK: - RDPConnectionDelegate
+    
+    func rdpClientDidConnect(_ client: RDPClient) {
+        print("RDP client connected")
+    }
+    
+    func rdpClientDidDisconnect(_ client: RDPClient) {
+        print("RDP client disconnected")
+    }
+    
+    func rdpClient(_ client: RDPClient, didFailWithError error: Error) {
+        print("RDP client error: \(error.localizedDescription)")
+    }
+    
+    func rdpClient(_ client: RDPClient, didUpdateFrame image: Data) {
+        // 画面更新の処理
+        print("RDP screen updated: \(String(data: image, encoding: .utf8) ?? "No data")")
+    }
+    
+    // MARK: - VNCConnectionDelegate
+    
+    func vncClientDidConnect(_ client: VNCClient) {
+        print("VNC client connected")
+    }
+    
+    func vncClientDidDisconnect(_ client: VNCClient) {
+        print("VNC client disconnected")
+    }
+    
+    func vncClient(_ client: VNCClient, didFailWithError error: Error) {
+        print("VNC client error: \(error.localizedDescription)")
+    }
+    
+    func vncClient(_ client: VNCClient, didUpdateFrame image: Data) {
+        // 画面更新の処理
+        print("VNC screen updated: \(String(data: image, encoding: .utf8) ?? "No data")")
+    }
+    
+    // MARK: - SSHConnectionDelegate
+    
+    func sshClientDidConnect(_ client: SSHClient) {
+        print("SSH client connected")
+    }
+    
+    func sshClientDidDisconnect(_ client: SSHClient) {
+        print("SSH client disconnected")
+    }
+    
+    func sshClient(_ client: SSHClient, didFailWithError error: Error) {
+        print("SSH client error: \(error.localizedDescription)")
+    }
+    
+    func sshClient(_ client: SSHClient, didReceiveOutput output: String) {
+        print("SSH output: \(output)")
     }
 }

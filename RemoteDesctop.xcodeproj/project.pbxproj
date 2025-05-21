@@ -3,11 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 90;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		022430392DDCC63400A17644 /* RoyalVNCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 022430382DDCC63400A17644 /* RoyalVNCKit */; };
+		02B09B702DDDD8C8000E4805 /* Citadel in Frameworks */ = {isa = PBXBuildFile; productRef = 02B09B6F2DDDD8C8000E4805 /* Citadel */; };
+		02B09B732DDDD8FD000E4805 /* CocoaAsyncSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 02B09B722DDDD8FD000E4805 /* CocoaAsyncSocket */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,9 +35,22 @@
 		02290FE02DDCC58800F6FCF5 /* RemoteDesctopUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RemoteDesctopUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0204E0572DDD7D2E0019A023 /* Exceptions for "remoteDesctop" folder in "RemoteDesctop" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 02290FC62DDCC58700F6FCF5 /* RemoteDesctop */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		02290FC92DDCC58700F6FCF5 /* remoteDesctop */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0204E0572DDD7D2E0019A023 /* Exceptions for "remoteDesctop" folder in "RemoteDesctop" target */,
+			);
 			path = remoteDesctop;
 			sourceTree = "<group>";
 		};
@@ -54,25 +69,21 @@
 /* Begin PBXFrameworksBuildPhase section */
 		02290FC42DDCC58700F6FCF5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				022430392DDCC63400A17644 /* RoyalVNCKit in Frameworks */,
+				02B09B702DDDD8C8000E4805 /* Citadel in Frameworks */,
+				02B09B732DDDD8FD000E4805 /* CocoaAsyncSocket in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		02290FD32DDCC58800F6FCF5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		02290FDD2DDCC58800F6FCF5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -110,14 +121,14 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
-			);
 			fileSystemSynchronizedGroups = (
 				02290FC92DDCC58700F6FCF5 /* remoteDesctop */,
 			);
 			name = RemoteDesctop;
 			packageProductDependencies = (
 				022430382DDCC63400A17644 /* RoyalVNCKit */,
+				02B09B6F2DDDD8C8000E4805 /* Citadel */,
+				02B09B722DDDD8FD000E4805 /* CocoaAsyncSocket */,
 			);
 			productName = remoteDesctop;
 			productReference = 02290FC72DDCC58700F6FCF5 /* RemoteDesctop.app */;
@@ -140,8 +151,6 @@
 				02290FD92DDCC58800F6FCF5 /* remoteDesctopTests */,
 			);
 			name = RemoteDesctopTests;
-			packageProductDependencies = (
-			);
 			productName = remoteDesctopTests;
 			productReference = 02290FD62DDCC58800F6FCF5 /* RemoteDesctopTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -163,8 +172,6 @@
 				02290FE32DDCC58800F6FCF5 /* remoteDesctopUITests */,
 			);
 			name = RemoteDesctopUITests;
-			packageProductDependencies = (
-			);
 			productName = remoteDesctopUITests;
 			productReference = 02290FE02DDCC58800F6FCF5 /* RemoteDesctopUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -203,8 +210,10 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				022430372DDCC63400A17644 /* XCRemoteSwiftPackageReference "royalvnc" */,
+				02B09B6E2DDDD8C8000E4805 /* XCRemoteSwiftPackageReference "Citadel" */,
+				02B09B712DDDD8FD000E4805 /* XCRemoteSwiftPackageReference "CocoaAsyncSocket" */,
 			);
-			preferredProjectObjectVersion = 77;
+			preferredProjectObjectVersion = 90;
 			productRefGroup = 02290FC82DDCC58700F6FCF5 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -219,48 +228,36 @@
 /* Begin PBXResourcesBuildPhase section */
 		02290FC52DDCC58700F6FCF5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		02290FD42DDCC58800F6FCF5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		02290FDE2DDCC58800F6FCF5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		02290FC32DDCC58700F6FCF5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		02290FD22DDCC58800F6FCF5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		02290FDC2DDCC58800F6FCF5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
@@ -278,7 +275,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		02290FE82DDCC58800F6FCF5 /* Debug */ = {
+		02290FE82DDCC58800F6FCF5 /* Debug configuration for PBXProject "RemoteDesctop" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -342,7 +339,7 @@
 			};
 			name = Debug;
 		};
-		02290FE92DDCC58800F6FCF5 /* Release */ = {
+		02290FE92DDCC58800F6FCF5 /* Release configuration for PBXProject "RemoteDesctop" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -399,7 +396,7 @@
 			};
 			name = Release;
 		};
-		02290FEB2DDCC58800F6FCF5 /* Debug */ = {
+		02290FEB2DDCC58800F6FCF5 /* Debug configuration for PBXNativeTarget "RemoteDesctop" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -409,6 +406,7 @@
 				DEVELOPMENT_TEAM = FUX9M9L88Y;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -427,7 +425,7 @@
 			};
 			name = Debug;
 		};
-		02290FEC2DDCC58800F6FCF5 /* Release */ = {
+		02290FEC2DDCC58800F6FCF5 /* Release configuration for PBXNativeTarget "RemoteDesctop" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -437,6 +435,7 @@
 				DEVELOPMENT_TEAM = FUX9M9L88Y;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -455,7 +454,7 @@
 			};
 			name = Release;
 		};
-		02290FEE2DDCC58800F6FCF5 /* Debug */ = {
+		02290FEE2DDCC58800F6FCF5 /* Debug configuration for PBXNativeTarget "RemoteDesctopTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -474,7 +473,7 @@
 			};
 			name = Debug;
 		};
-		02290FEF2DDCC58800F6FCF5 /* Release */ = {
+		02290FEF2DDCC58800F6FCF5 /* Release configuration for PBXNativeTarget "RemoteDesctopTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -493,7 +492,7 @@
 			};
 			name = Release;
 		};
-		02290FF12DDCC58800F6FCF5 /* Debug */ = {
+		02290FF12DDCC58800F6FCF5 /* Debug configuration for PBXNativeTarget "RemoteDesctopUITests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -510,7 +509,7 @@
 			};
 			name = Debug;
 		};
-		02290FF22DDCC58800F6FCF5 /* Release */ = {
+		02290FF22DDCC58800F6FCF5 /* Release configuration for PBXNativeTarget "RemoteDesctopUITests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -533,37 +532,33 @@
 		02290FC22DDCC58700F6FCF5 /* Build configuration list for PBXProject "RemoteDesctop" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				02290FE82DDCC58800F6FCF5 /* Debug */,
-				02290FE92DDCC58800F6FCF5 /* Release */,
+				02290FE82DDCC58800F6FCF5 /* Debug configuration for PBXProject "RemoteDesctop" */,
+				02290FE92DDCC58800F6FCF5 /* Release configuration for PBXProject "RemoteDesctop" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		02290FEA2DDCC58800F6FCF5 /* Build configuration list for PBXNativeTarget "RemoteDesctop" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				02290FEB2DDCC58800F6FCF5 /* Debug */,
-				02290FEC2DDCC58800F6FCF5 /* Release */,
+				02290FEB2DDCC58800F6FCF5 /* Debug configuration for PBXNativeTarget "RemoteDesctop" */,
+				02290FEC2DDCC58800F6FCF5 /* Release configuration for PBXNativeTarget "RemoteDesctop" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		02290FED2DDCC58800F6FCF5 /* Build configuration list for PBXNativeTarget "RemoteDesctopTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				02290FEE2DDCC58800F6FCF5 /* Debug */,
-				02290FEF2DDCC58800F6FCF5 /* Release */,
+				02290FEE2DDCC58800F6FCF5 /* Debug configuration for PBXNativeTarget "RemoteDesctopTests" */,
+				02290FEF2DDCC58800F6FCF5 /* Release configuration for PBXNativeTarget "RemoteDesctopTests" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		02290FF02DDCC58800F6FCF5 /* Build configuration list for PBXNativeTarget "RemoteDesctopUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				02290FF12DDCC58800F6FCF5 /* Debug */,
-				02290FF22DDCC58800F6FCF5 /* Release */,
+				02290FF12DDCC58800F6FCF5 /* Debug configuration for PBXNativeTarget "RemoteDesctopUITests" */,
+				02290FF22DDCC58800F6FCF5 /* Release configuration for PBXNativeTarget "RemoteDesctopUITests" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
@@ -573,8 +568,24 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/royalapplications/royalvnc";
 			requirement = {
-				kind = upToNextMajorVersion;
+				kind = upToNextMinorVersion;
 				minimumVersion = 1.0.0;
+			};
+		};
+		02B09B6E2DDDD8C8000E4805 /* XCRemoteSwiftPackageReference "Citadel" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/orlandos-nl/Citadel.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.10.0;
+			};
+		};
+		02B09B712DDDD8FD000E4805 /* XCRemoteSwiftPackageReference "CocoaAsyncSocket" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/robbiehanson/CocoaAsyncSocket";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.6.5;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -584,6 +595,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 022430372DDCC63400A17644 /* XCRemoteSwiftPackageReference "royalvnc" */;
 			productName = RoyalVNCKit;
+		};
+		02B09B6F2DDDD8C8000E4805 /* Citadel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 02B09B6E2DDDD8C8000E4805 /* XCRemoteSwiftPackageReference "Citadel" */;
+			productName = Citadel;
+		};
+		02B09B722DDDD8FD000E4805 /* CocoaAsyncSocket */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 02B09B712DDDD8FD000E4805 /* XCRemoteSwiftPackageReference "CocoaAsyncSocket" */;
+			productName = CocoaAsyncSocket;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
