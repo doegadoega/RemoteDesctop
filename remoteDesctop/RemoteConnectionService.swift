@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 // SPMを使用した実装
-class RemoteConnectionService: NSObject, RDPConnectionDelegate, VNCConnectionDelegate, SSHConnectionDelegate {
+class RemoteConnectionService: NSObject, RDPConnectionDelegate, AppVNCClientDelegate, SSHConnectionDelegate {
     static let shared = RemoteConnectionService()
     
     private var rdpClient: RDPClient?
@@ -115,8 +115,9 @@ class RemoteConnectionService: NSObject, RDPConnectionDelegate, VNCConnectionDel
         print("RDP client error: \(error.localizedDescription)")
     }
     
-    func rdpClient(_ client: RDPClient, didUpdateFrame image: UIImage) {
+    func rdpClient(_ client: RDPClient, didUpdateFrame image: Data) {
         // 画面更新の処理
+        print("RDP screen updated: \(String(data: image, encoding: .utf8) ?? "No data")")
     }
     
     // MARK: - VNCConnectionDelegate
@@ -133,8 +134,9 @@ class RemoteConnectionService: NSObject, RDPConnectionDelegate, VNCConnectionDel
         print("VNC client error: \(error.localizedDescription)")
     }
     
-    func vncClient(_ client: VNCClient, didUpdateFrame image: UIImage) {
+    func vncClient(_ client: VNCClient, didUpdateFrame image: Data) {
         // 画面更新の処理
+        print("VNC screen updated: \(String(data: image, encoding: .utf8) ?? "No data")")
     }
     
     // MARK: - SSHConnectionDelegate

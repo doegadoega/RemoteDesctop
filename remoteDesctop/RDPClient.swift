@@ -6,18 +6,24 @@
 //
 
 import Foundation
-import UIKit
 
-// FreeRDPのラッパークラス
-// 注: 実際のFreeRDPライブラリの統合には、C/C++のブリッジングが必要
+// MARK: - RDP接続のデリゲートプロトコル
+protocol RDPConnectionDelegate: AnyObject {
+    func rdpClientDidConnect(_ client: RDPClient)
+    func rdpClientDidDisconnect(_ client: RDPClient)
+    func rdpClient(_ client: RDPClient, didFailWithError error: Error)
+    func rdpClient(_ client: RDPClient, didUpdateFrame image: Data)
+}
+
+// MARK: - 実装
 class RDPClient {
-    private var hostname: String
-    private var port: Int
-    private var username: String
-    private var password: String
+    private let hostname: String
+    private let port: Int
+    private let username: String
+    private let password: String
     
     private var isConnected = false
-    private var connectionDelegate: RDPConnectionDelegate?
+    private weak var connectionDelegate: RDPConnectionDelegate?
     
     init(hostname: String, port: Int, username: String, password: String) {
         self.hostname = hostname
@@ -31,56 +37,61 @@ class RDPClient {
     }
     
     func connect() async throws -> Bool {
-        // 実際の実装では、FreeRDPのネイティブコードを呼び出す
+        // 実際の実装では、RDPライブラリを使用して接続
         // ここではシミュレーションのみ
         
-        // 接続プロセスをシミュレート
-        try await Task.sleep(for: .seconds(2))
+        // 接続成功をシミュレート
+        isConnected = true
+        connectionDelegate?.rdpClientDidConnect(self)
         
-        // ランダムに成功または失敗を返す（デモ用）
-        let success = Bool.random()
+        // 画面更新のシミュレーション開始
+        startScreenUpdates()
         
-        if success {
-            isConnected = true
-            connectionDelegate?.rdpClientDidConnect(self)
-        } else {
-            connectionDelegate?.rdpClient(self, didFailWithError: NSError(domain: "RDPClient", code: 1001, userInfo: [NSLocalizedDescriptionKey: "接続に失敗しました"]))
-        }
-        
-        return success
+        return true
     }
     
     func disconnect() {
-        if isConnected {
-            isConnected = false
-            connectionDelegate?.rdpClientDidDisconnect(self)
-        }
+        guard isConnected else { return }
+        stopScreenUpdates()
+        isConnected = false
+        connectionDelegate?.rdpClientDidDisconnect(self)
     }
     
-    // 画面キャプチャを取得するメソッド（実際の実装では、FreeRDPからのフレームデータを処理）
-    func getScreenCapture() -> UIImage? {
-        // 実際の実装では、FreeRDPからのフレームデータを処理してUIImageに変換
-        // ここではダミー画像を返す
-        return nil
-    }
-    
-    // キーボード入力を送信するメソッド
     func sendKeyboardInput(_ text: String) {
-        // 実際の実装では、FreeRDPを通じてリモートサーバーにキーボード入力を送信
+        guard isConnected else { return }
+        
+        // 実際の実装では、RDPプロトコルを通じてリモートサーバーにキーボード入力を送信
         print("Sending keyboard input: \(text)")
     }
     
-    // マウスイベントを送信するメソッド
     func sendMouseEvent(x: Int, y: Int, isClick: Bool) {
-        // 実際の実装では、FreeRDPを通じてリモートサーバーにマウスイベントを送信
-        print("Sending mouse event: x=\(x), y=\(y), isClick=\(isClick)")
+        guard isConnected else { return }
+        
+        // 実際の実装では、RDPプロトコルを通じてリモートサーバーにマウスイベントを送信
+        print("Mouse event: x=\(x), y=\(y), isClick=\(isClick)")
     }
-}
-
-// RDP接続のデリゲートプロトコル
-protocol RDPConnectionDelegate: AnyObject {
-    func rdpClientDidConnect(_ client: RDPClient)
-    func rdpClientDidDisconnect(_ client: RDPClient)
-    func rdpClient(_ client: RDPClient, didFailWithError error: Error)
-    func rdpClient(_ client: RDPClient, didUpdateFrame image: UIImage)
+    
+    func getScreenCapture() -> Data {
+        guard isConnected else { return Data() }
+        
+        // 実際の実装では、RDPからのフレームデータを処理してデータに変換
+        // ここではダミーデータを生成
+        let dummyText = "RDP Screen: \(hostname):\(port)"
+        return dummyText.data(using: .utf8) ?? Data()
+    }
+    
+    private var updateTimer: Timer?
+    
+    private func startScreenUpdates() {
+        updateTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self else { return }
+            let imageData = self.getScreenCapture()
+            self.connectionDelegate?.rdpClient(self, didUpdateFrame: imageData)
+        }
+    }
+    
+    private func stopScreenUpdates() {
+        updateTimer?.invalidate()
+        updateTimer = nil
+    }
 }

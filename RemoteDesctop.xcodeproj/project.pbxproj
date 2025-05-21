@@ -8,7 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		022430392DDCC63400A17644 /* RoyalVNCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 022430382DDCC63400A17644 /* RoyalVNCKit */; };
-		02B09B632DDDAC78000E4805 /* CocoaAsyncSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 02B09B622DDDAC78000E4805 /* CocoaAsyncSocket */; };
+		02B09B702DDDD8C8000E4805 /* Citadel in Frameworks */ = {isa = PBXBuildFile; productRef = 02B09B6F2DDDD8C8000E4805 /* Citadel */; };
+		02B09B732DDDD8FD000E4805 /* CocoaAsyncSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 02B09B722DDDD8FD000E4805 /* CocoaAsyncSocket */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,8 +70,9 @@
 		02290FC42DDCC58700F6FCF5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
-				02B09B632DDDAC78000E4805 /* CocoaAsyncSocket in Frameworks */,
 				022430392DDCC63400A17644 /* RoyalVNCKit in Frameworks */,
+				02B09B702DDDD8C8000E4805 /* Citadel in Frameworks */,
+				02B09B732DDDD8FD000E4805 /* CocoaAsyncSocket in Frameworks */,
 			);
 		};
 		02290FD32DDCC58800F6FCF5 /* Frameworks */ = {
@@ -125,7 +127,8 @@
 			name = RemoteDesctop;
 			packageProductDependencies = (
 				022430382DDCC63400A17644 /* RoyalVNCKit */,
-				02B09B622DDDAC78000E4805 /* CocoaAsyncSocket */,
+				02B09B6F2DDDD8C8000E4805 /* Citadel */,
+				02B09B722DDDD8FD000E4805 /* CocoaAsyncSocket */,
 			);
 			productName = remoteDesctop;
 			productReference = 02290FC72DDCC58700F6FCF5 /* RemoteDesctop.app */;
@@ -207,7 +210,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				022430372DDCC63400A17644 /* XCRemoteSwiftPackageReference "royalvnc" */,
-				02B09B612DDDAC78000E4805 /* XCRemoteSwiftPackageReference "CocoaAsyncSocket" */,
+				02B09B6E2DDDD8C8000E4805 /* XCRemoteSwiftPackageReference "Citadel" */,
+				02B09B712DDDD8FD000E4805 /* XCRemoteSwiftPackageReference "CocoaAsyncSocket" */,
 			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = 02290FC82DDCC58700F6FCF5 /* Products */;
@@ -568,7 +572,15 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		02B09B612DDDAC78000E4805 /* XCRemoteSwiftPackageReference "CocoaAsyncSocket" */ = {
+		02B09B6E2DDDD8C8000E4805 /* XCRemoteSwiftPackageReference "Citadel" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/orlandos-nl/Citadel.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.10.0;
+			};
+		};
+		02B09B712DDDD8FD000E4805 /* XCRemoteSwiftPackageReference "CocoaAsyncSocket" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/robbiehanson/CocoaAsyncSocket";
 			requirement = {
@@ -584,9 +596,14 @@
 			package = 022430372DDCC63400A17644 /* XCRemoteSwiftPackageReference "royalvnc" */;
 			productName = RoyalVNCKit;
 		};
-		02B09B622DDDAC78000E4805 /* CocoaAsyncSocket */ = {
+		02B09B6F2DDDD8C8000E4805 /* Citadel */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 02B09B612DDDAC78000E4805 /* XCRemoteSwiftPackageReference "CocoaAsyncSocket" */;
+			package = 02B09B6E2DDDD8C8000E4805 /* XCRemoteSwiftPackageReference "Citadel" */;
+			productName = Citadel;
+		};
+		02B09B722DDDD8FD000E4805 /* CocoaAsyncSocket */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 02B09B712DDDD8FD000E4805 /* XCRemoteSwiftPackageReference "CocoaAsyncSocket" */;
 			productName = CocoaAsyncSocket;
 		};
 /* End XCSwiftPackageProductDependency section */

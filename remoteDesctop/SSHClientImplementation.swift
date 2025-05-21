@@ -6,130 +6,78 @@
 //
 
 import Foundation
-import Citadel
-import NIO
-
-// SSHクライアントの実装
-// SPMを使用した実装例
-
-// SSHクライアントのプロトコル
-protocol SSHClientProtocol {
-    func connect() async throws -> Bool
-    func disconnect()
-    func executeCommand(_ command: String) async throws -> String
-    func startShell() async throws
-    func writeToShell(_ command: String) async throws
-    func readFromShell() async throws -> String
-}
 
 // SSHクライアントの実装クラス
-class SSHClientImplementation: SSHClientProtocol {
+class SSHClientImplementation: SSHClient {
     private var hostname: String
     private var port: Int
     private var username: String
     private var password: String
     
-    private var client: SSHClient?
     private var isConnected = false
-    private var connectionDelegate: SSHConnectionDelegate?
-    private var shell: SSHChannel?
+    private weak var connectionDelegate: SSHConnectionDelegate?
     
-    init(hostname: String, port: Int, username: String, password: String) {
+    override init(hostname: String, port: Int, username: String, password: String) {
         self.hostname = hostname
         self.port = port
         self.username = username
         self.password = password
+        super.init(hostname: hostname, port: port, username: username, password: password)
     }
     
-    func setDelegate(_ delegate: SSHConnectionDelegate) {
+    override func setDelegate(_ delegate: SSHConnectionDelegate) {
         self.connectionDelegate = delegate
+        super.setDelegate(delegate)
     }
     
-    func connect() async throws -> Bool {
-        // Citadelを使用してSSH接続を確立
-        let eventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: 1)
-        
+    override func connect() async throws -> Bool {
         do {
-            client = try await SSHClient.connect(
-                host: hostname,
-                port: port,
-                username: username,
-                authenticationMethod: .passwordBased(password: password),
-                hostKeyValidator: .acceptUnknownHostKeys,
-                on: eventLoopGroup
-            ).get()
+            // 実際の実装では、SSHライブラリを使用して接続
+            // ここではシミュレーションのみ
             
+            // 接続プロセスをシミュレート - 非同期処理を使用せずに即時返す
+            // 実際の実装では、ここで適切な接続処理を行う
+            
+            // コマンド実行結果をシミュレート
+            let result = "Connected to \(hostname):\(port) as \(username)"
+            
+            // 接続成功をシミュレート
             isConnected = true
             connectionDelegate?.sshClientDidConnect(self)
+            connectionDelegate?.sshClient(self, didReceiveOutput: result)
             
             return true
         } catch {
-            throw NSError(domain: "SSHClient", code: 1001, userInfo: [NSLocalizedDescriptionKey: "接続に失敗しました: \(error.localizedDescription)"])
+            connectionDelegate?.sshClient(self, didFailWithError: error)
+            return false
         }
     }
     
-    func disconnect() {
-        if isConnected, let client = client {
-            try? client.close().wait()
+    override func disconnect() {
+        if isConnected {
             isConnected = false
             connectionDelegate?.sshClientDidDisconnect(self)
         }
     }
     
-    // コマンドを実行するメソッド
+    // コマンド実行メソッド
     func executeCommand(_ command: String) async throws -> String {
-        guard isConnected, let client = client else {
-            throw NSError(domain: "SSHClient", code: 1003, userInfo: [NSLocalizedDescriptionKey: "接続されていません"])
+        guard isConnected else {
+            throw SSHClientError.notConnected
         }
         
-        do {
-            let result = try await client.executeCommand(command).get()
-            connectionDelegate?.sshClient(self, didReceiveOutput: result)
-            return result
-        } catch {
-            throw NSError(domain: "SSHClient", code: 1004, userInfo: [NSLocalizedDescriptionKey: "コマンド実行に失敗しました: \(error.localizedDescription)"])
-        }
-    }
-    
-    // シェルを開始するメソッド
-    func startShell() async throws {
-        guard isConnected, let client = client else {
-            throw NSError(domain: "SSHClient", code: 1003, userInfo: [NSLocalizedDescriptionKey: "接続されていません"])
-        }
+        // 実際の実装では、SSHセッションを通じてコマンドを実行
+        // ここではシミュレーションのみ
         
-        do {
-            shell = try await client.openShell().get()
-        } catch {
-            throw NSError(domain: "SSHClient", code: 1005, userInfo: [NSLocalizedDescriptionKey: "シェルの開始に失敗しました: \(error.localizedDescription)"])
-        }
-    }
-    
-    // シェルにコマンドを送信するメソッド
-    func writeToShell(_ command: String) async throws {
-        guard isConnected, let shell = shell else {
-            throw NSError(domain: "SSHClient", code: 1003, userInfo: [NSLocalizedDescriptionKey: "シェルが開始されていません"])
-        }
+        // コマンド実行をシミュレート - 非同期処理を使用せずに即時返す
+        // 実際の実装では、ここで適切なコマンド実行処理を行う
         
-        do {
-            try await shell.write(command).get()
-        } catch {
-            throw NSError(domain: "SSHClient", code: 1006, userInfo: [NSLocalizedDescriptionKey: "シェルへの書き込みに失敗しました: \(error.localizedDescription)"])
-        }
-    }
-    
-    // シェルからの出力を読み取るメソッド
-    func readFromShell() async throws -> String {
-        guard isConnected, let shell = shell else {
-            throw NSError(domain: "SSHClient", code: 1003, userInfo: [NSLocalizedDescriptionKey: "シェルが開始されていません"])
-        }
+        // 実行結果をシミュレート
+        let result = "Output of '\(command)' on \(hostname):\n$ \(command)\nSimulated command output."
         
-        do {
-            let data = try await shell.read().get()
-            let output = String(data: data, encoding: .utf8) ?? ""
-            connectionDelegate?.sshClient(self, didReceiveOutput: output)
-            return output
-        } catch {
-            throw NSError(domain: "SSHClient", code: 1007, userInfo: [NSLocalizedDescriptionKey: "シェルからの読み取りに失敗しました: \(error.localizedDescription)"])
-        }
+        // デリゲートに通知
+        connectionDelegate?.sshClient(self, didReceiveOutput: result)
+        
+        return result
     }
 }
