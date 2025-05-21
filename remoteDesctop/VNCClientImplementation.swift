@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import CocoaAsyncSocket
+import EasyVNC
 
 // VNCクライアントの実装
 // SPMを使用した実装例
@@ -22,12 +23,12 @@ protocol VNCClientProtocol {
 }
 
 // VNCクライアントの実装クラス
-class VNCClientImplementation: NSObject, VNCClientProtocol, GCDAsyncSocketDelegate {
+class VNCClientImplementation: NSObject, VNCClientProtocol {
     private var hostname: String
     private var port: Int
     private var password: String
     
-    private var socket: GCDAsyncSocket?
+    private var vncClient: VNCClientManager?
     private var isConnected = false
     private var connectionDelegate: VNCConnectionDelegate?
     
@@ -46,25 +47,26 @@ class VNCClientImplementation: NSObject, VNCClientProtocol, GCDAsyncSocketDelega
     }
     
     func connect() async throws -> Bool {
-        // CocoaAsyncSocketを使用してVNC接続を確立
-        socket = GCDAsyncSocket(delegate: self, delegateQueue: DispatchQueue.main)
+        // EasyVNCを使用してVNC接続を確立
+        vncClient = VNCClientManager(host: hostname, port: UInt16(port), password: password)
         
         do {
-            try socket?.connect(toHost: hostname, onPort: UInt16(port), withTimeout: 10.0)
+            // 接続を開始
+            try vncClient?.connect()
             
-            // 接続プロセスをシミュレート
+            // 接続プロセスをシミュレート（実際の接続は非同期で行われる）
             try await Task.sleep(for: .seconds(2))
             
             // 接続成功をシミュレート
             isConnected = true
-            connectionDelegate?.vncClientDidConnect(self as! VNCClient)
+            connectionDelegate?.vncClientDidConnect(self)
             
             // 画面更新のシミュレーション
             startScreenUpdates()
             
             return true
         } catch {
-            connectionDelegate?.vncClient(self as! VNCClient, didFailWithError: error)
+            connectionDelegate?.vncClient(self, didFailWithError: error)
             return false
         }
     }
@@ -72,31 +74,41 @@ class VNCClientImplementation: NSObject, VNCClientProtocol, GCDAsyncSocketDelega
     func disconnect() {
         if isConnected {
             stopScreenUpdates()
-            socket?.disconnect()
+            vncClient?.disconnect()
             isConnected = false
-            connectionDelegate?.vncClientDidDisconnect(self as! VNCClient)
+            connectionDelegate?.vncClientDidDisconnect(self)
         }
     }
     
     func sendKeyboardInput(_ text: String) {
-        guard isConnected else { return }
+        guard isConnected, let vncClient = vncClient else { return }
         
-        // 実際の実装では、VNCプロトコルを通じてリモートサーバーにキーボード入力を送信
-        print("Sending keyboard input via VNC: \(text)")
+        // EasyVNCを使用してキーボード入力を送信
+        for char in text {
+            vncClient.sendKey(char)
+        }
     }
     
     func sendMouseEvent(x: Int, y: Int, isClick: Bool) {
-        guard isConnected else { return }
+        guard isConnected, let vncClient = vncClient else { return }
         
-        // 実際の実装では、VNCプロトコルを通じてリモートサーバーにマウスイベントを送信
-        print("Sending mouse event via VNC: x=\(x), y=\(y), isClick=\(isClick)")
+        // EasyVNCを使用してマウスイベントを送信
+        if isClick {
+            vncClient.sendMouseClick(x: Int32(x), y: Int32(y), button: 1) // 左クリック
+        } else {
+            vncClient.sendMouseMove(x: Int32(x), y: Int32(y))
+        }
     }
     
     func getScreenCapture() -> UIImage? {
-        guard isConnected else { return nil }
+        guard isConnected, let vncClient = vncClient else { return nil }
         
-        // 実際の実装では、VNCからのフレームデータを処理してUIImageに変換
-        // ここではダミー画像を生成
+        // EasyVNCから最新のフレームを取得
+        if let frameData = vncClient.getCurrentFrame() {
+            return UIImage(data: frameData)
+        }
+        
+        // フレームが取得できない場合はダミー画像を生成
         let size = CGSize(width: 800, height: 600)
         UIGraphicsBeginImageContextWithOptions(size, false, 0)
         defer { UIGraphicsEndImageContext() }
@@ -127,27 +139,11 @@ class VNCClientImplementation: NSObject, VNCClientProtocol, GCDAsyncSocketDelega
         return UIGraphicsGetImageFromCurrentImageContext()
     }
     
-    // GCDAsyncSocketDelegate メソッド
-    func socket(_ sock: GCDAsyncSocket, didConnectToHost host: String, port: UInt16) {
-        print("Connected to \(host):\(port)")
-        // 実際の実装では、VNC認証プロセスを開始
-    }
-    
-    func socketDidDisconnect(_ sock: GCDAsyncSocket, withError err: Error?) {
-        stopScreenUpdates()
-        isConnected = false
-        if let error = err {
-            connectionDelegate?.vncClient(self as! VNCClient, didFailWithError: error)
-        } else {
-            connectionDelegate?.vncClientDidDisconnect(self as! VNCClient)
-        }
-    }
-    
     // 画面更新のシミュレーション
     private func startScreenUpdates() {
-        updateTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+        updateTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             guard let self = self, let image = self.getScreenCapture() else { return }
-            self.connectionDelegate?.vncClient(self as! VNCClient, didUpdateFrame: image)
+            self.connectionDelegate?.vncClient(self, didUpdateFrame: image)
         }
     }
     

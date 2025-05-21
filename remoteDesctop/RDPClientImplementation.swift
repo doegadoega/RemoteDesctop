@@ -8,10 +8,8 @@
 import Foundation
 import UIKit
 import SwiftUI
-
-// RDPクライアントの実装
 // 注: 実際のRDP実装には、FreeRDPやその他のライブラリを使用する必要があります
-// このファイルはSPMを使用した実装例です
+// 現在はSPMで対応しているRDPライブラリがないため、シミュレーションのみ実装
 
 // RDPクライアントのプロトコル
 protocol RDPClientProtocol {
@@ -55,7 +53,7 @@ class RDPClientImplementation: RDPClientProtocol {
         
         // 接続成功をシミュレート
         isConnected = true
-        connectionDelegate?.rdpClientDidConnect(self as! RDPClient)
+        connectionDelegate?.rdpClientDidConnect(self)
         
         // 画面更新のシミュレーション
         startScreenUpdates()
@@ -67,7 +65,7 @@ class RDPClientImplementation: RDPClientProtocol {
         if isConnected {
             stopScreenUpdates()
             isConnected = false
-            connectionDelegate?.rdpClientDidDisconnect(self as! RDPClient)
+            connectionDelegate?.rdpClientDidDisconnect(self)
         }
     }
     
@@ -117,14 +115,62 @@ class RDPClientImplementation: RDPClientProtocol {
         
         (text as NSString).draw(in: textRect, withAttributes: attributes)
         
+        // ウィンドウ風の装飾を追加
+        drawWindowDecoration(in: context, size: size)
+        
         return UIGraphicsGetImageFromCurrentImageContext()
+    }
+    
+    // ウィンドウ風の装飾を描画
+    private func drawWindowDecoration(in context: CGContext, size: CGSize) {
+        // ウィンドウのタイトルバー
+        let titleBarHeight: CGFloat = 30
+        let titleBarRect = CGRect(x: 0, y: 0, width: size.width, height: titleBarHeight)
+        
+        // タイトルバーの背景
+        context.setFillColor(UIColor.systemBlue.cgColor)
+        context.fill(titleBarRect)
+        
+        // ウィンドウタイトル
+        let title = "Remote Desktop - \(hostname)"
+        let titleAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 14, weight: .medium),
+            .foregroundColor: UIColor.white
+        ]
+        
+        let titleSize = (title as NSString).size(withAttributes: titleAttributes)
+        let titleRect = CGRect(
+            x: (size.width - titleSize.width) / 2,
+            y: (titleBarHeight - titleSize.height) / 2,
+            width: titleSize.width,
+            height: titleSize.height
+        )
+        
+        (title as NSString).draw(in: titleRect, withAttributes: titleAttributes)
+        
+        // ウィンドウコントロールボタン
+        let buttonSize: CGFloat = 12
+        let buttonSpacing: CGFloat = 8
+        let buttonY = (titleBarHeight - buttonSize) / 2
+        
+        // 閉じるボタン
+        context.setFillColor(UIColor.systemRed.cgColor)
+        context.fillEllipse(in: CGRect(x: 10, y: buttonY, width: buttonSize, height: buttonSize))
+        
+        // 最小化ボタン
+        context.setFillColor(UIColor.systemYellow.cgColor)
+        context.fillEllipse(in: CGRect(x: 10 + buttonSize + buttonSpacing, y: buttonY, width: buttonSize, height: buttonSize))
+        
+        // 最大化ボタン
+        context.setFillColor(UIColor.systemGreen.cgColor)
+        context.fillEllipse(in: CGRect(x: 10 + 2 * (buttonSize + buttonSpacing), y: buttonY, width: buttonSize, height: buttonSize))
     }
     
     // 画面更新のシミュレーション
     private func startScreenUpdates() {
         updateTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             guard let self = self, let image = self.getScreenCapture() else { return }
-            self.connectionDelegate?.rdpClient(self as! RDPClient, didUpdateFrame: image)
+            self.connectionDelegate?.rdpClient(self, didUpdateFrame: image)
         }
     }
     

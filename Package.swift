@@ -14,22 +14,22 @@ let package = Package(
             targets: ["RemoteDesctop"]),
     ],
     dependencies: [
-        // SSH接続用ライブラリ
-        .package(url: "https://github.com/NMSSH/NMSSH.git", from: "2.3.1"),
+        // SSH接続用ライブラリ - NIOSSHベースのCitadelを使用
+        .package(url: "https://github.com/orlandos-nl/Citadel.git", from: "0.10.0"),
         
         // VNC接続用ライブラリ
         .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket.git", from: "7.6.5"),
         
-        // RDP接続用ライブラリ（代替として使用可能なオープンソースライブラリ）
-        .package(url: "https://github.com/TigerVNC/tigervnc.git", branch: "master"),
+        // VNCクライアント実装
+        .package(url: "https://github.com/iOmega8561/EasyVNC.git", branch: "main"),
     ],
     targets: [
         .target(
             name: "RemoteDesctop",
             dependencies: [
-                .product(name: "NMSSH", package: "NMSSH"),
+                .product(name: "Citadel", package: "Citadel"),
                 .product(name: "CocoaAsyncSocket", package: "CocoaAsyncSocket"),
-                // TigerVNCはSwift Package Managerで直接サポートされていないため、カスタムビルドが必要
+                .product(name: "EasyVNC", package: "EasyVNC"),
             ],
             path: "remoteDesctop"
         ),

@@ -21,9 +21,9 @@ iOS用のリモートデスクトップクライアントアプリケーショ�
 - iOS 17以上をターゲット
 - Swift Package Manager (SPM) による依存関係管理
 - 接続ライブラリ:
-  - RDP: TigerVNC（代替ライブラリ）
-  - VNC: CocoaAsyncSocketベースの実装
-  - SSH: NMSSH
+  - RDP: シミュレーション実装（適切なSPM対応ライブラリがないため）
+  - VNC: EasyVNC（SPM経由）
+  - SSH: Citadel（NIOSSHベース、SPM経由）
 
 ## 使用方法
 
@@ -50,9 +50,10 @@ iOS用のリモートデスクトップクライアントアプリケーショ�
   - SwiftUI: ユーザーインターフェース
   - SwiftData: データ永続化
   - Combine: 非同期処理
-  - CocoaAsyncSocket: VNC接続（SPM経由）
-  - NMSSH: SSH接続（SPM経由）
-  - TigerVNC: RDP/VNC接続（SPM経由）
+  - CocoaAsyncSocket: ネットワーク通信（SPM経由）
+  - Citadel: SSH接続（SPM経由）
+  - EasyVNC: VNC接続（SPM経由）
+  - NIO: 非同期ネットワーク処理（SPM経由）
 
 ### プロジェクト構造
 
