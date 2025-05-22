@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import Citadel
+import NIO
 
 // SSHクライアントの実装クラス
 class SSHClientImplementation: SSHClient {
@@ -16,6 +18,11 @@ class SSHClientImplementation: SSHClient {
     
     private var isConnected = false
     private weak var connectionDelegate: SSHConnectionDelegate?
+    
+    // Citadel関連のプロパティ
+    private var eventLoopGroup: MultiThreadedEventLoopGroup?
+    private var connection: SSHClient.Connection?
+    private var shell: SSHClient.Shell?
     
     override init(hostname: String, port: Int, username: String, password: String) {
         self.hostname = hostname
@@ -32,52 +39,87 @@ class SSHClientImplementation: SSHClient {
     
     override func connect() async throws -> Bool {
         do {
-            // 実際の実装では、SSHライブラリを使用して接続
-            // ここではシミュレーションのみ
+            // イベントループグループを作成
+            eventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: 1)
             
-            // 接続プロセスをシミュレート - 非同期処理を使用せずに即時返す
-            // 実際の実装では、ここで適切な接続処理を行う
+            guard let eventLoopGroup = eventLoopGroup else {
+                throw SSHClientError.notConnected
+            }
             
-            // コマンド実行結果をシミュレート
-            let result = "Connected to \(hostname):\(port) as \(username)"
+            // SSHクライアントを作成
+            let client = Citadel.SSHClient(
+                userInfo: .init(username: username),
+                hostInfo: .init(hostname: hostname, port: port),
+                hostKeyValidator: .acceptAnything(),
+                reconnect: .none
+            )
             
-            // 接続成功をシミュレート
+            // 接続を確立
+            connection = try await client.connect(on: eventLoopGroup.next())
+            
+            // パスワード認証
+            try await connection?.authenticate(.password(password))
+            
+            // シェルを開く
+            shell = try await connection?.requestShell()
+            
+            // シェルの出力を処理
+            shell?.output.whenOutput { [weak self] data in
+                guard let self = self else { return }
+                let output = String(buffer: data)
+                DispatchQueue.main.async {
+                    self.connectionDelegate?.sshClient(self, didReceiveOutput: output)
+                }
+            }
+            
+            // 接続成功
             isConnected = true
             connectionDelegate?.sshClientDidConnect(self)
-            connectionDelegate?.sshClient(self, didReceiveOutput: result)
+            connectionDelegate?.sshClient(self, didReceiveOutput: "Connected to \(hostname):\(port) as \(username)")
             
             return true
         } catch {
+            // 接続失敗
+            await cleanup()
             connectionDelegate?.sshClient(self, didFailWithError: error)
             return false
         }
     }
     
     override func disconnect() {
-        if isConnected {
-            isConnected = false
-            connectionDelegate?.sshClientDidDisconnect(self)
+        Task {
+            await cleanup()
+            DispatchQueue.main.async {
+                self.isConnected = false
+                self.connectionDelegate?.sshClientDidDisconnect(self)
+            }
         }
+    }
+    
+    private func cleanup() async {
+        // シェルを閉じる
+        try? await shell?.close()
+        shell = nil
+        
+        // 接続を閉じる
+        try? await connection?.close()
+        connection = nil
+        
+        // イベントループグループをシャットダウン
+        try? await eventLoopGroup?.shutdownGracefully()
+        eventLoopGroup = nil
     }
     
     // コマンド実行メソッド
     func executeCommand(_ command: String) async throws -> String {
-        guard isConnected else {
+        guard isConnected, let shell = shell else {
             throw SSHClientError.notConnected
         }
         
-        // 実際の実装では、SSHセッションを通じてコマンドを実行
-        // ここではシミュレーションのみ
+        // コマンドを実行
+        try await shell.write(command + "\n")
         
-        // コマンド実行をシミュレート - 非同期処理を使用せずに即時返す
-        // 実際の実装では、ここで適切なコマンド実行処理を行う
-        
-        // 実行結果をシミュレート
-        let result = "Output of '\(command)' on \(hostname):\n$ \(command)\nSimulated command output."
-        
-        // デリゲートに通知
-        connectionDelegate?.sshClient(self, didReceiveOutput: result)
-        
-        return result
+        // 実行結果を返す（実際には非同期で出力が処理される）
+        return "Command sent: \(command)"
     }
 }

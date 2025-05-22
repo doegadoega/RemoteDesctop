@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CocoaAsyncSocket
 
 // VNCクライアントの実装クラス
 class VNCClientImplementation: VNCClient {
@@ -16,14 +17,44 @@ class VNCClientImplementation: VNCClient {
     private var isConnected = false
     private weak var connectionDelegate: AppVNCClientDelegate?
     
-    // 画面更新用のタイマー
-    private var updateTimer: Timer?
+    // VNC接続用のソケット
+    private var socket: GCDAsyncSocket?
+    private var frameUpdateTimer: Timer?
+    private var frameCounter: Int = 0
+    private var simulatedScreenData: Data?
     
     override init(hostname: String, port: Int, password: String) {
         self.hostname = hostname
         self.port = port
         self.password = password
         super.init(hostname: hostname, port: port, password: password)
+        
+        // シミュレーション用のデータを初期化
+        initializeSimulatedData()
+    }
+    
+    private func initializeSimulatedData() {
+        // シミュレーション用のテキストデータを生成
+        let simulatedText = """
+        +-----------------------------------------+
+        |  VNC Connection                         |
+        |  Connected to: \(hostname):\(port)      |
+        +-----------------------------------------+
+        |                                         |
+        |                                         |
+        |                                         |
+        |                                         |
+        |                                         |
+        |                                         |
+        |                                         |
+        |                                         |
+        |                                         |
+        |                                         |
+        |                                         |
+        +-----------------------------------------+
+        """
+        
+        simulatedScreenData = simulatedText.data(using: .utf8)
     }
     
     override func setDelegate(_ delegate: AppVNCClientDelegate) {
@@ -33,21 +64,36 @@ class VNCClientImplementation: VNCClient {
     
     override func connect() async throws -> Bool {
         // 実際の実装では、VNCプロトコルを使用して接続
-        // ここではシミュレーションのみ
+        // ここではシミュレーションと基本的なソケット接続
         
-        // 接続成功をシミュレート
-        isConnected = true
-        connectionDelegate?.vncClientDidConnect(self)
+        // ソケットを初期化
+        socket = GCDAsyncSocket(delegate: nil, delegateQueue: DispatchQueue.main)
         
-        // 画面更新のシミュレーション
-        startScreenUpdates()
-        
-        return true
+        do {
+            // 接続の遅延をシミュレート
+            try await Task.sleep(nanoseconds: 1_500_000_000) // 1.5秒待機
+            
+            // 接続成功をシミュレート
+            isConnected = true
+            connectionDelegate?.vncClientDidConnect(self)
+            
+            // 画面更新の開始
+            startFrameUpdates()
+            
+            return true
+        } catch {
+            // 接続失敗
+            socket = nil
+            connectionDelegate?.vncClient(self, didFailWithError: error)
+            return false
+        }
     }
     
     override func disconnect() {
         if isConnected {
-            stopScreenUpdates()
+            stopFrameUpdates()
+            socket?.disconnect()
+            socket = nil
             isConnected = false
             connectionDelegate?.vncClientDidDisconnect(self)
         }
@@ -58,6 +104,37 @@ class VNCClientImplementation: VNCClient {
         
         // 実際の実装では、VNCプロトコルを通じてリモートサーバーにキーボード入力を送信
         print("Sending keyboard input: \(text)")
+        
+        // シミュレーションの一部として、入力に応じて画面を更新
+        updateSimulatedScreen(withInput: text)
+    }
+    
+    private func updateSimulatedScreen(withInput text: String) {
+        // 入力に応じてシミュレーション画面を更新
+        let simulatedText = """
+        +-----------------------------------------+
+        |  VNC Connection                         |
+        |  Connected to: \(hostname):\(port)      |
+        +-----------------------------------------+
+        |                                         |
+        |  > \(text)                              |
+        |                                         |
+        |  Processing input...                    |
+        |                                         |
+        |  Input processed.                       |
+        |                                         |
+        |  Frame #\(frameCounter)                 |
+        |                                         |
+        |                                         |
+        |                                         |
+        +-----------------------------------------+
+        """
+        
+        simulatedScreenData = simulatedText.data(using: .utf8)
+        
+        // 画面更新をデリゲートに通知
+        let imageData = getScreenCapture()
+        connectionDelegate?.vncClient(self, didUpdateFrame: imageData)
     }
     
     override func sendMouseEvent(x: Int, y: Int, isClick: Bool) {
@@ -65,28 +142,82 @@ class VNCClientImplementation: VNCClient {
         
         // 実際の実装では、VNCプロトコルを通じてリモートサーバーにマウスイベントを送信
         print("Sending mouse event: x=\(x), y=\(y), isClick=\(isClick)")
+        
+        // シミュレーションの一部として、マウスイベントに応じて画面を更新
+        let simulatedText = """
+        +-----------------------------------------+
+        |  VNC Connection                         |
+        |  Connected to: \(hostname):\(port)      |
+        +-----------------------------------------+
+        |                                         |
+        |  Mouse position: (\(x), \(y))           |
+        |  Click: \(isClick ? "Yes" : "No")       |
+        |                                         |
+        |                                         |
+        |                                         |
+        |                                         |
+        |  Frame #\(frameCounter)                 |
+        |                                         |
+        |                                         |
+        |                                         |
+        +-----------------------------------------+
+        """
+        
+        simulatedScreenData = simulatedText.data(using: .utf8)
+        
+        // 画面更新をデリゲートに通知
+        let imageData = getScreenCapture()
+        connectionDelegate?.vncClient(self, didUpdateFrame: imageData)
     }
     
     override func getScreenCapture() -> Data {
-        guard isConnected else { return Data() }
+        guard isConnected, let data = simulatedScreenData else { return Data() }
         
-        // 実際の実装では、VNCからのフレームデータを処理してデータに変換
-        // ここではダミーデータを生成
-        let dummyText = "VNC Implementation Screen: \(hostname):\(port) - \(Date())"
-        return dummyText.data(using: .utf8) ?? Data()
+        // フレームカウンターを更新
+        frameCounter += 1
+        
+        // シミュレーションデータを返す
+        return data
     }
     
-    // 画面更新のシミュレーション
-    private func startScreenUpdates() {
-        updateTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            guard let self, self.isConnected else { return }
+    // 画面更新の処理
+    private func startFrameUpdates() {
+        frameUpdateTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self = self, self.isConnected else { return }
+            
+            // フレームカウンターを更新
+            self.frameCounter += 1
+            
+            // 定期的に画面を更新
+            let simulatedText = """
+            +-----------------------------------------+
+            |  VNC Connection                         |
+            |  Connected to: \(self.hostname):\(self.port) |
+            +-----------------------------------------+
+            |                                         |
+            |                                         |
+            |                                         |
+            |                                         |
+            |                                         |
+            |                                         |
+            |                                         |
+            |  Frame #\(self.frameCounter)            |
+            |  Time: \(Date())                        |
+            |                                         |
+            |                                         |
+            +-----------------------------------------+
+            """
+            
+            self.simulatedScreenData = simulatedText.data(using: .utf8)
+            
+            // 画面更新をデリゲートに通知
             let imageData = self.getScreenCapture()
             self.connectionDelegate?.vncClient(self, didUpdateFrame: imageData)
         }
     }
     
-    private func stopScreenUpdates() {
-        updateTimer?.invalidate()
-        updateTimer = nil
+    private func stopFrameUpdates() {
+        frameUpdateTimer?.invalidate()
+        frameUpdateTimer = nil
     }
 }

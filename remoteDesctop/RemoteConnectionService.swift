@@ -37,7 +37,8 @@ class RemoteConnectionService: NSObject, RDPConnectionDelegate, AppVNCClientDele
     }
     
     private func connectRDP(_ connection: RemoteConnection) async throws -> Bool {
-        rdpClient = RDPClient(
+        // RDPClientImplementationを使用
+        rdpClient = RDPClientImplementation(
             hostname: connection.hostname,
             port: connection.port,
             username: connection.username,
@@ -49,7 +50,8 @@ class RemoteConnectionService: NSObject, RDPConnectionDelegate, AppVNCClientDele
     }
     
     private func connectVNC(_ connection: RemoteConnection) async throws -> Bool {
-        vncClient = VNCClient(
+        // VNCClientImplementationを使用
+        vncClient = VNCClientImplementation(
             hostname: connection.hostname,
             port: connection.port,
             password: connection.password
@@ -60,7 +62,8 @@ class RemoteConnectionService: NSObject, RDPConnectionDelegate, AppVNCClientDele
     }
     
     private func connectSSH(_ connection: RemoteConnection) async throws -> Bool {
-        sshClient = SSHClient(
+        // SSHClientImplementationを使用
+        sshClient = SSHClientImplementation(
             hostname: connection.hostname,
             port: connection.port,
             username: connection.username,
