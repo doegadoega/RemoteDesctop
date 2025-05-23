@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="D2c-5x-fzi">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Framebuffer View Controller-->
+        <scene sceneID="Tmp-yb-w9p">
+            <objects>
+                <viewController storyboardIdentifier="CAFramebufferViewController" id="D2c-5x-fzi" customClass="CAFramebufferViewController" customModule="RoyalVNCiOSDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="kAO-PB-0i9">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dEa-0b-baO">
+                                <rect key="frame" x="2" y="118" width="42.666666666666664" height="28"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="eject.circle" catalog="system" buttonSize="mini"/>
+                                <connections>
+                                    <action selector="buttonDisconnect_touchUpInside:" destination="D2c-5x-fzi" eventType="touchUpInside" id="JMi-A9-CVz"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="BP2-CG-Omh"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="BP2-CG-Omh" firstAttribute="top" secondItem="dEa-0b-baO" secondAttribute="top" id="VZ0-L2-u1J"/>
+                            <constraint firstItem="dEa-0b-baO" firstAttribute="leading" secondItem="BP2-CG-Omh" secondAttribute="leading" constant="2" id="kwJ-28-wmb"/>
+                        </constraints>
+                    </view>
+                    <nil key="simulatedTopBarMetrics"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="D85-dU-52l" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1744.6153846153845" y="-2.1327014218009479"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="eject.circle" catalog="system" width="128" height="123"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

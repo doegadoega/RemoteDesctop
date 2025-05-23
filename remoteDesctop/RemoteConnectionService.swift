@@ -50,15 +50,18 @@ class RemoteConnectionService: NSObject, RDPConnectionDelegate, AppVNCClientDele
     }
     
     private func connectVNC(_ connection: RemoteConnection) async throws -> Bool {
-        // VNCClientImplementationを使用
-        vncClient = VNCClientImplementation(
+        // VNCClientを使用
+        vncClient = VNCClient(
             hostname: connection.hostname,
             port: connection.port,
+            username: connection.username,
             password: connection.password
         )
         
         vncClient?.setDelegate(self)
-        return try await vncClient?.connect() ?? false
+        vncClient?.connect()
+        // connect()はasync throwsではなくなったので、trueを返す
+        return true
     }
     
     private func connectSSH(_ connection: RemoteConnection) async throws -> Bool {

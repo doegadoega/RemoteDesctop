@@ -12,52 +12,32 @@ struct AddConnectionView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
-    @State private var name: String = ""
-    @State private var hostname: String = ""
-    @State private var port: String = ""
-    @State private var username: String = ""
-    @State private var password: String = ""
-    @State private var connectionType: ConnectionType = .rdp {
-        didSet {
-            if oldValue != connectionType {
-                port = "\(RemoteConnectionService.shared.getDefaultPort(for: connectionType))"
-            }
-        }
-    }
-    
-    @State private var showingAlert = false
-    @State private var alertMessage = ""
+    @State private var name = ""
+    @State private var hostname = ""
+    @State private var port = 3389
+    @State private var username = ""
+    @State private var password = ""
+    @State private var connectionType = ConnectionType.rdp
     
     var body: some View {
         NavigationStack {
             Form {
-                Section(header: Text("Connection Details")) {
+                Section("Connection Details") {
                     TextField("Name", text: $name)
-                    TextField("Hostname/IP Address", text: $hostname)
-                    TextField("Port", text: $port)
+                    TextField("Hostname", text: $hostname)
+                    TextField("Port", value: $port, format: .number)
                         .keyboardType(.numberPad)
-                        .onAppear {
-                            if port.isEmpty {
-                                port = "\(RemoteConnectionService.shared.getDefaultPort(for: connectionType))"
-                            }
-                        }
-                }
-                
-                Section(header: Text("Authentication")) {
                     TextField("Username", text: $username)
                     SecureField("Password", text: $password)
-                }
-                
-                Section(header: Text("Connection Type")) {
                     Picker("Type", selection: $connectionType) {
-                        Text("Remote Desktop").tag(ConnectionType.rdp)
+                        Text("RDP").tag(ConnectionType.rdp)
                         Text("VNC").tag(ConnectionType.vnc)
                         Text("SSH").tag(ConnectionType.ssh)
                     }
-                    .pickerStyle(SegmentedPickerStyle())
                 }
             }
             .navigationTitle("Add Connection")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
@@ -65,47 +45,25 @@ struct AddConnectionView: View {
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        saveConnection()
+                    Button("Add") {
+                        addConnection()
                     }
+                    .disabled(name.isEmpty || hostname.isEmpty)
                 }
-            }
-            .alert(alertMessage, isPresented: $showingAlert) {
-                Button("OK", role: .cancel) { }
             }
         }
     }
     
-    private func saveConnection() {
-        guard !name.isEmpty else {
-            alertMessage = "Please enter a name for the connection"
-            showingAlert = true
-            return
-        }
-        
-        guard !hostname.isEmpty else {
-            alertMessage = "Please enter a hostname or IP address"
-            showingAlert = true
-            return
-        }
-        
-        guard let portNumber = Int(port), portNumber > 0 else {
-            alertMessage = "Please enter a valid port number"
-            showingAlert = true
-            return
-        }
-        
+    private func addConnection() {
         let connection = RemoteConnection(
             name: name,
             hostname: hostname,
-            port: portNumber,
+            port: port,
             username: username,
             password: password,
             connectionType: connectionType
         )
-        
         modelContext.insert(connection)
-        
         dismiss()
     }
 }

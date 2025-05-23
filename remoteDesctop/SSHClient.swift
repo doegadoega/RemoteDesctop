@@ -10,14 +10,23 @@ import Foundation
 // import NIO
 // import NIOSSH
 
+// SSHConnectionDelegateの定義はSSHConnectionDelegate.swiftに集約
+
+enum SSHClientError: Error {
+    case notConnected
+    case invalidCredentials
+    case connectionFailed
+    // 必要ならここに他のエラーケースを追加
+}
+
 class SSHClient {
     // private let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
-    private let hostname: String
-    private let port: Int
-    private let username: String
-    private let password: String
+    let hostname: String
+    let port: Int
+    let username: String
+    let password: String
     private var isConnected = false
-    private weak var connectionDelegate: SSHConnectionDelegate?
+    weak var delegate: SSHConnectionDelegate?
 
     init(hostname: String, port: Int, username: String, password: String) {
         self.hostname = hostname
@@ -27,46 +36,22 @@ class SSHClient {
     }
     
     func setDelegate(_ delegate: SSHConnectionDelegate) {
-        self.connectionDelegate = delegate
+        self.delegate = delegate
     }
     
     func connect() async throws -> Bool {
-        do {
-            // シンプルなコマンドを実行して接続テスト
-            let result = try await connectAndExecute(command: "echo Connected")
-            isConnected = true
-            connectionDelegate?.sshClientDidConnect(self)
-            connectionDelegate?.sshClient(self, didReceiveOutput: result)
-            return true
-        } catch {
-            connectionDelegate?.sshClient(self, didFailWithError: error)
-            return false
-        }
+        fatalError("connect() must be implemented by subclass")
     }
     
     func disconnect() {
-        if isConnected {
-            isConnected = false
-            connectionDelegate?.sshClientDidDisconnect(self)
-        }
+        fatalError("disconnect() must be implemented by subclass")
     }
-
-    func connectAndExecute(command: String) async throws -> String {
-        // 実際の実装では、SSHライブラリを使用して接続し、コマンドを実行
-        // ここではシミュレーションのみ
-        
-        // 接続プロセスをシミュレート - 非同期処理を使用せずに即時返す
-        // 実際の実装では、ここで適切な接続処理を行う
-        
-        // コマンド実行結果をシミュレート
-        return "Simulated output for command: \(command)"
+    
+    func executeCommand(_ command: String) async throws -> String {
+        fatalError("executeCommand() must be implemented by subclass")
     }
 }
 
 // MARK: - SSH Error
 
-enum SSHClientError: Error {
-    case notConnected
-    case invalidChannelType
-    case noResultPromise
-}
+// ここに他のエラー定義が必要な場合はSSHClientErrorにまとめてください

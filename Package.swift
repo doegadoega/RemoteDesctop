@@ -6,6 +6,7 @@ import PackageDescription
 let package = Package(
     name: "RemoteDesctop",
     platforms: [
+        .macOS(.v12),
         .iOS(.v17)
     ],
     products: [
@@ -14,22 +15,22 @@ let package = Package(
             targets: ["RemoteDesctop"]),
     ],
     dependencies: [
-        // SSH接続用ライブラリ - NIOSSHベースのCitadelを使用
-        .package(url: "https://github.com/orlandos-nl/Citadel.git", from: "0.10.0"),
+        // SSH接続用ライブラリ
+        .package(url: "https://github.com/apple/swift-nio.git", from: "2.0.0"),
+        .package(url: "https://github.com/apple/swift-nio-ssh.git", from: "0.1.0"),
         
         // VNC接続用ライブラリ
         .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket.git", from: "7.6.5"),
-        
-        // VNCクライアント実装
-        .package(url: "https://github.com/iOmega8561/EasyVNC.git", branch: "main"),
+        .package(url: "https://github.com/royalapplications/royalvnc.git", from: "1.0.0"),
     ],
     targets: [
         .target(
             name: "RemoteDesctop",
             dependencies: [
-                .product(name: "Citadel", package: "Citadel"),
                 .product(name: "CocoaAsyncSocket", package: "CocoaAsyncSocket"),
-                .product(name: "EasyVNC", package: "EasyVNC"),
+                .product(name: "NIO", package: "swift-nio"),
+                .product(name: "NIOSSH", package: "swift-nio-ssh"),
+                .product(name: "RoyalVNCKit", package: "royalvnc"),
             ],
             path: "remoteDesctop"
         ),

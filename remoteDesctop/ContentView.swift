@@ -31,29 +31,14 @@ struct ContentView: View {
             List {
                 ForEach(filteredConnections) { connection in
                     NavigationLink(destination: ConnectionDetailView(connection: connection)) {
-                        VStack(alignment: .leading) {
-                            Text(connection.name)
-                                .font(.headline)
-                            HStack {
-                                Text(connection.hostname)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                Spacer()
-                                connectionTypeIcon(for: connection.connectionType)
-                            }
-                        }
-                        .padding(.vertical, 4)
+                        ConnectionRow(connection: connection)
                     }
                 }
                 .onDelete(perform: deleteConnections)
             }
-            .navigationTitle("Remote Desktop")
             .searchable(text: $searchText, prompt: "Search connections")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .automatic) {
                     Button(action: { showingAddConnection = true }) {
                         Label("Add Connection", systemImage: "plus")
                     }
@@ -64,20 +49,12 @@ struct ContentView: View {
             }
             .overlay {
                 if connections.isEmpty {
-                    ContentUnavailableView(
-                        label: {
-                            Label("No Connections", systemImage: "network.slash")
-                        },
-                        description: {
-                            Text("Add a connection to get started")
-                        },
-                        actions: {
-                            Button("Add Connection") {
-                                showingAddConnection = true
-                            }
-                            .buttonStyle(.borderedProminent)
-                        }
-                    )
+                    VStack {
+                        Image(systemName: "network.slash")
+                            .font(.largeTitle)
+                        Text("No Connections")
+                            .font(.title2)
+                    }
                 }
             }
         }

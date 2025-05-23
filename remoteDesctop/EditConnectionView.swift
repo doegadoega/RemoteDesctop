@@ -7,57 +7,33 @@
 
 import SwiftUI
 import SwiftData
+import RoyalVNCKit
 
 struct EditConnectionView: View {
+    @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
-    let connection: RemoteConnection
-    
-    @State private var name: String
-    @State private var hostname: String
-    @State private var port: String
-    @State private var username: String
-    @State private var password: String
-    @State private var connectionType: ConnectionType
-    
-    @State private var showingAlert = false
-    @State private var alertMessage = ""
-    
-    init(connection: RemoteConnection) {
-        self.connection = connection
-        _name = State(initialValue: connection.name)
-        _hostname = State(initialValue: connection.hostname)
-        _port = State(initialValue: String(connection.port))
-        _username = State(initialValue: connection.username)
-        _password = State(initialValue: connection.password)
-        _connectionType = State(initialValue: connection.connectionType)
-    }
+    @Bindable var connection: RemoteConnection
     
     var body: some View {
         NavigationStack {
             Form {
-                Section(header: Text("Connection Details")) {
-                    TextField("Name", text: $name)
-                    TextField("Hostname/IP Address", text: $hostname)
-                    TextField("Port", text: $port)
+                Section("Connection Details") {
+                    TextField("Name", text: $connection.name)
+                    TextField("Hostname", text: $connection.hostname)
+                    TextField("Port", value: $connection.port, format: .number)
                         .keyboardType(.numberPad)
-                }
-                
-                Section(header: Text("Authentication")) {
-                    TextField("Username", text: $username)
-                    SecureField("Password", text: $password)
-                }
-                
-                Section(header: Text("Connection Type")) {
-                    Picker("Type", selection: $connectionType) {
-                        Text("Remote Desktop").tag(ConnectionType.rdp)
+                    TextField("Username", text: $connection.username)
+                    SecureField("Password", text: $connection.password)
+                    Picker("Type", selection: $connection.connectionType) {
+                        Text("RDP").tag(ConnectionType.rdp)
                         Text("VNC").tag(ConnectionType.vnc)
                         Text("SSH").tag(ConnectionType.ssh)
                     }
-                    .pickerStyle(SegmentedPickerStyle())
                 }
             }
             .navigationTitle("Edit Connection")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
@@ -66,44 +42,12 @@ struct EditConnectionView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        saveConnection()
+                        dismiss()
                     }
+                    .disabled(connection.name.isEmpty || connection.hostname.isEmpty)
                 }
             }
-            .alert(alertMessage, isPresented: $showingAlert) {
-                Button("OK", role: .cancel) { }
-            }
         }
-    }
-    
-    private func saveConnection() {
-        guard !name.isEmpty else {
-            alertMessage = "Please enter a name for the connection"
-            showingAlert = true
-            return
-        }
-        
-        guard !hostname.isEmpty else {
-            alertMessage = "Please enter a hostname or IP address"
-            showingAlert = true
-            return
-        }
-        
-        guard let portNumber = Int(port), portNumber > 0 else {
-            alertMessage = "Please enter a valid port number"
-            showingAlert = true
-            return
-        }
-        
-        // Update the connection properties
-        connection.name = name
-        connection.hostname = hostname
-        connection.port = portNumber
-        connection.username = username
-        connection.password = password
-        connection.connectionType = connectionType
-        
-        dismiss()
     }
 }
 

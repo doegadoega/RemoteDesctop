@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import RoyalVNCKit
+import UIKit
 
 // MARK: - VNC接続のデリゲートプロトコル
 protocol AppVNCClientDelegate: AnyObject {
@@ -17,77 +19,120 @@ protocol AppVNCClientDelegate: AnyObject {
 
 // MARK: - 実装
 class VNCClient: NSObject {
-    private let hostname: String
-    private let port: Int
-    private let password: String
-
-    private var isConnected = false
+    var settings: VNCConnection.Settings
+    var userName: String?
+    var password: String = ""
+    
+    var credential: VNCCredential {
+        if let userName {
+            return VNCUsernamePasswordCredential(username: userName,
+                                                 password: self.password)
+        }
+        return VNCPasswordCredential(password: self.password)
+    }
+    
+    private var connection: VNCConnection?
     private weak var connectionDelegate: AppVNCClientDelegate?
+    private(set) var framebufferView: VNCFramebufferView?
 
-    private var updateTimer: Timer?
-
-    init(hostname: String, port: Int, password: String) {
-        self.hostname = hostname
-        self.port = port
-        self.password = password
+    init(hostname: String, port: Int, username: String, password: String) {
+        self.settings = VNCConnection.Settings(isDebugLoggingEnabled: true,
+                                          hostname: hostname,
+                                          port: UInt16(port),
+                                          isShared: false,
+                                          isScalingEnabled: true,
+                                          useDisplayLink: true,
+                                          inputMode: .forwardAllKeyboardShortcutsAndHotKeys,
+                                          isClipboardRedirectionEnabled: true,
+                                          colorDepth: .depth16Bit,
+                                          frameEncodings: .default)
     }
 
     func setDelegate(_ delegate: AppVNCClientDelegate) {
         self.connectionDelegate = delegate
     }
 
-    func connect() async throws -> Bool {
-        // 実際の実装では、VNCライブラリを使用して接続
-        // ここではシミュレーションのみ
-        
-        // 接続成功をシミュレート
-        isConnected = true
-        connectionDelegate?.vncClientDidConnect(self)
-        
-        // 画面更新のシミュレーション開始
-        startScreenUpdates()
-        
-        return true
+    func connect() {
+        self.connection = VNCConnection(settings: self.settings)
+        self.connection?.delegate = self
+        self.connection?.connect()
     }
 
     func disconnect() {
-        guard isConnected else { return }
-        stopScreenUpdates()
-        isConnected = false
+        self.connection?.disconnect()
+        self.connection = nil
         connectionDelegate?.vncClientDidDisconnect(self)
+        framebufferView = nil
     }
 
     func sendKeyboardInput(_ text: String) {
-        guard isConnected else { return }
-        
-        // 実際の実装では、VNCプロトコルを通じてリモートサーバーにキーボード入力を送信
-        print("Sending keyboard input: \(text)")
+        // RoyalVNCKitのAPIでキーボード入力送信（必要に応じて実装）
     }
 
     func sendMouseEvent(x: Int, y: Int, isClick: Bool) {
-        guard isConnected else { return }
-        
-        // 実際の実装では、VNCプロトコルを通じてリモートサーバーにマウスイベントを送信
-        print("Mouse event: x=\(x), y=\(y), isClick=\(isClick)")
+        // RoyalVNCKitのAPIでマウスイベント送信（必要に応じて実装）
     }
 
     func getScreenCapture() -> Data {
-        // 実際の実装では、VNCからのフレームデータを処理してデータに変換
-        // ここではダミーデータを生成
-        let dummyText = "VNC Screen: \(hostname):\(port)"
-        return dummyText.data(using: .utf8) ?? Data()
+        if let connect = self.connection,
+           let framebuffer = connect.framebuffer,
+            let cgImage = framebuffer.cgImage {
+            let image = UIImage(cgImage: cgImage)
+            return image.pngData() ?? Data()
+        }
+        return Data()
     }
+}
 
-    private func startScreenUpdates() {
-        updateTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            guard let self else { return }
-            let imageData = self.getScreenCapture()
-            self.connectionDelegate?.vncClient(self, didUpdateFrame: imageData)
+extension VNCClient: VNCConnectionDelegate {
+    func connection(_ connection: RoyalVNCKit.VNCConnection, stateDidChange connectionState: RoyalVNCKit.VNCConnection.ConnectionState) {
+     
+        switch connectionState.status {
+        case .connecting:
+            self.connectionDelegate?.vncClientDidConnect(self)
+        case .disconnected:
+            self.destroyConnection()
+            self.destroyFramebufferView()
+        default:
+            break
         }
     }
+    
+    func connection(_ connection: RoyalVNCKit.VNCConnection, credentialFor authenticationType: RoyalVNCKit.VNCAuthenticationType, completion: @escaping ((any RoyalVNCKit.VNCCredential)?) -> Void) {
+        
+    }
+    
+    func connection(_ connection: RoyalVNCKit.VNCConnection, didCreateFramebuffer framebuffer: RoyalVNCKit.VNCFramebuffer) {
+        
+    }
+    
+    func connection(_ connection: RoyalVNCKit.VNCConnection, didResizeFramebuffer framebuffer: RoyalVNCKit.VNCFramebuffer) {
+        
+    }
+    
+    func connection(_ connection: RoyalVNCKit.VNCConnection, didUpdateFramebuffer framebuffer: RoyalVNCKit.VNCFramebuffer, x: UInt16, y: UInt16, width: UInt16, height: UInt16) {
+        
+    }
+    
+    func connection(_ connection: RoyalVNCKit.VNCConnection, didUpdateCursor cursor: RoyalVNCKit.VNCCursor) {
+        
+    }
+}
 
-    private func stopScreenUpdates() {
-        updateTimer?.invalidate()
-        updateTimer = nil
+private extension VNCClient {
+    /// Connection削除
+    func destroyConnection() {
+        connection?.delegate = nil
+        connection = nil
+    }
+    
+    /// フレームバッファ削除
+    private func destroyFramebufferView() {
+//        guard let framebufferViewController = framebufferViewController
+//        else {
+//            return
+//        }
+//        framebufferViewController.framebufferViewControllerDelegate = nil
+//        framebufferViewController.dismiss(animated: true)
     }
 }

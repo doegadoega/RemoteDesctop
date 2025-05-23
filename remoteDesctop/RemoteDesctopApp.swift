@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 @main
-struct remoteDesctopApp: App {
+struct RemoteDesctopApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             RemoteConnection.self,

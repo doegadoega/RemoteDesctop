@@ -6,29 +6,19 @@
 //
 
 import Foundation
-import Citadel
 import NIO
+import NIOSSH
 
 // SSHクライアントの実装クラス
 class SSHClientImplementation: SSHClient {
-    private var hostname: String
-    private var port: Int
-    private var username: String
-    private var password: String
-    
     private var isConnected = false
     private weak var connectionDelegate: SSHConnectionDelegate?
     
-    // Citadel関連のプロパティ
+    // NIO関連のプロパティ
     private var eventLoopGroup: MultiThreadedEventLoopGroup?
-    private var connection: SSHClient.Connection?
-    private var shell: SSHClient.Shell?
+    private var channel: Channel?
     
     override init(hostname: String, port: Int, username: String, password: String) {
-        self.hostname = hostname
-        self.port = port
-        self.username = username
-        self.password = password
         super.init(hostname: hostname, port: port, username: username, password: password)
     }
     
@@ -46,31 +36,27 @@ class SSHClientImplementation: SSHClient {
                 throw SSHClientError.notConnected
             }
             
-            // SSHクライアントを作成
-            let client = Citadel.SSHClient(
-                userInfo: .init(username: username),
-                hostInfo: .init(hostname: hostname, port: port),
-                hostKeyValidator: .acceptAnything(),
-                reconnect: .none
+            // SSHクライアントの設定
+            let configuration = SSHClientConfiguration(
+                userAuthDelegate: PasswordAuthenticationDelegate(username: username, password: password),
+                serverAuthDelegate: AcceptAllHostKeysDelegate()
             )
             
             // 接続を確立
-            connection = try await client.connect(on: eventLoopGroup.next())
-            
-            // パスワード認証
-            try await connection?.authenticate(.password(password))
-            
-            // シェルを開く
-            shell = try await connection?.requestShell()
-            
-            // シェルの出力を処理
-            shell?.output.whenOutput { [weak self] data in
-                guard let self = self else { return }
-                let output = String(buffer: data)
-                DispatchQueue.main.async {
-                    self.connectionDelegate?.sshClient(self, didReceiveOutput: output)
+            let bootstrap = ClientBootstrap(group: eventLoopGroup)
+                .channelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR), value: 1)
+                .channelInitializer { channel in
+                    channel.pipeline.addHandlers([
+                        NIOSSHHandler(
+                            role: .client(configuration),
+                            allocator: ByteBufferAllocator(),
+                            inboundChildChannelInitializer: nil
+                        ),
+                        SSHClientSessionHandler(delegate: self.connectionDelegate)
+                    ])
                 }
-            }
+            
+            channel = try await bootstrap.connect(host: hostname, port: port).get()
             
             // 接続成功
             isConnected = true
@@ -97,29 +83,78 @@ class SSHClientImplementation: SSHClient {
     }
     
     private func cleanup() async {
-        // シェルを閉じる
-        try? await shell?.close()
-        shell = nil
-        
-        // 接続を閉じる
-        try? await connection?.close()
-        connection = nil
+        // チャンネルを閉じる
+        try? await channel?.close()
+        channel = nil
         
         // イベントループグループをシャットダウン
         try? await eventLoopGroup?.shutdownGracefully()
         eventLoopGroup = nil
     }
     
-    // コマンド実行メソッド
-    func executeCommand(_ command: String) async throws -> String {
-        guard isConnected, let shell = shell else {
+    override func executeCommand(_ command: String) async throws -> String {
+        guard isConnected, let channel = channel else {
             throw SSHClientError.notConnected
         }
-        
-        // コマンドを実行
-        try await shell.write(command + "\n")
-        
-        // 実行結果を返す（実際には非同期で出力が処理される）
+        // コマンド送信例（実際の実装はHandlerで出力を受け取る必要あり）
+        let execRequest = SSHChannelRequestEvent.ExecRequest(command: command, wantReply: true)
+        try await channel.triggerUserOutboundEvent(execRequest).get()
         return "Command sent: \(command)"
+    }
+}
+
+// MARK: - SSH Authentication
+
+private class PasswordAuthenticationDelegate: NIOSSHClientUserAuthenticationDelegate {
+    let username: String
+    let password: String
+    
+    init(username: String, password: String) {
+        self.username = username
+        self.password = password
+    }
+    
+    func nextAuthenticationType(
+        availableMethods: NIOSSHAvailableUserAuthenticationMethods,
+        nextChallengePromise: EventLoopPromise<NIOSSHUserAuthenticationOffer?>
+    ) {
+        if availableMethods.contains(.password) {
+            nextChallengePromise.succeed(
+                .init(
+                    username: username,
+                    serviceName: "ssh-connection",
+                    offer: .password(.init(password: password))
+                )
+            )
+        } else {
+            nextChallengePromise.succeed(nil)
+        }
+    }
+}
+
+private class AcceptAllHostKeysDelegate: NIOSSHClientServerAuthenticationDelegate {
+    func validateHostKey(hostKey: NIOSSHPublicKey, validationCompletePromise: EventLoopPromise<Void>) {
+        validationCompletePromise.succeed(())
+    }
+}
+
+private class SSHClientSessionHandler: ChannelInboundHandler {
+    typealias InboundIn = SSHChannelData
+    typealias OutboundOut = SSHChannelData
+    
+    private weak var delegate: SSHConnectionDelegate?
+    
+    init(delegate: SSHConnectionDelegate?) {
+        self.delegate = delegate
+    }
+    
+    func channelRead(context: ChannelHandlerContext, data: NIOAny) {
+        // 出力データの処理
+        let channelData = unwrapInboundIn(data)
+        if case .byteBuffer(let buffer) = channelData.data {
+            let output = String(buffer: buffer)
+            delegate?.sshClient(self as! SSHClient, didReceiveOutput: output)
+            print("SSH Output: \(output)")
+        }
     }
 }

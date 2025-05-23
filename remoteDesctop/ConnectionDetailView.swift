@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 
+@available(macOS 14.0, *)
 struct ConnectionDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
@@ -21,73 +22,49 @@ struct ConnectionDetailView: View {
     @State private var navigateToRemoteDesktop = false
     
     var body: some View {
-        List {
-            Section(header: Text("Connection Details")) {
+        Form {
+            Section("Connection Details") {
                 LabeledContent("Name", value: connection.name)
                 LabeledContent("Hostname", value: connection.hostname)
-                LabeledContent("Port", value: "\(connection.port)")
+                LabeledContent("Port", value: String(connection.port))
+                LabeledContent("Username", value: connection.username)
                 LabeledContent("Type", value: connection.connectionType.rawValue)
             }
             
-            Section(header: Text("Authentication")) {
-                LabeledContent("Username", value: connection.username)
-                LabeledContent("Password", value: "••••••••")
-            }
-            
-            if let lastConnected = connection.lastConnected {
-                Section(header: Text("Connection History")) {
-                    LabeledContent("Last Connected", value: lastConnected.formatted(date: .long, time: .shortened))
+            Section("Connection History") {
+                if let lastConnected = connection.lastConnected {
+                    LabeledContent("Last Connected", value: lastConnected.formatted())
                 }
+                LabeledContent("Created", value: connection.createdAt.formatted())
             }
             
             Section {
-                Button(action: connectToRemoteDesktop) {
-                    HStack {
-                        Image(systemName: "arrow.right.circle.fill")
-                        Text("Connect")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .foregroundColor(.white)
+                Button("Connect") {
+                    connectToRemoteDesktop()
                 }
-                .listRowBackground(Color.blue)
-                .disabled(isConnecting)
+                .buttonStyle(.borderedProminent)
             }
         }
         .navigationTitle(connection.name)
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
+            ToolbarItem(placement: .automatic) {
                 Button(action: { showingEditSheet = true }) {
-                    Text("Edit")
+                    Label("Edit", systemImage: "pencil")
                 }
             }
-        }
-        .overlay {
-            if isConnecting {
-                ProgressView("Connecting...")
-                    .padding()
-                    .background(Color.secondary.colorInvert().opacity(0.8))
-                    .cornerRadius(10)
-                    .shadow(radius: 10)
-            }
-        }
-        .alert(alertMessage, isPresented: $showingAlert) {
-            Button("OK", role: .cancel) { }
         }
         .sheet(isPresented: $showingEditSheet) {
             EditConnectionView(connection: connection)
         }
-        .navigationDestination(isPresented: $navigateToRemoteDesktop) {
-            RemoteDesktopView(connection: connection)
-        }
     }
     
     private func connectToRemoteDesktop() {
-        // 接続画面に遷移
         connection.lastConnected = Date()
         navigateToRemoteDesktop = true
     }
 }
 
+@available(macOS 14.0, *)
 #Preview {
     do {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)

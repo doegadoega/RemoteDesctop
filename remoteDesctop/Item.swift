@@ -8,6 +8,7 @@
 import Foundation
 import SwiftData
 
+@available(macOS 14.0, *)
 @Model
 final class RemoteConnection {
     var name: String
@@ -32,7 +33,7 @@ final class RemoteConnection {
 }
 
 enum ConnectionType: String, Codable {
-    case rdp = "Remote Desktop"
+    case rdp = "RDP"
     case vnc = "VNC"
     case ssh = "SSH"
 }
