@@ -7,7 +7,7 @@
 
 import Foundation
 import NIO
-import NIOSSH
+@preconcurrency import NIOSSH
 
 // SSHクライアントの実装クラス
 class SSHClientImplementation: SSHClient {
